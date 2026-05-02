@@ -1,0 +1,112 @@
+name: Enhancement
+description: Improve existing functionality (faster, clearer, more accessible).
+title: "enh: <one-line summary>"
+labels: ["enhancement", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to propose improvements to a feature that already exists. For brand-new functionality, use the Feature request form instead. Per the org-wide [Contributing guide](https://github.com/ColourWithin/.github/blob/main/CONTRIBUTING.md), enhancement work is gated on the `approved-enhancement` label.
+
+  - type: input
+    id: affected-repo
+    attributes:
+      label: Affected repo
+      placeholder: "colour-within-ios"
+    validations:
+      required: true
+
+  - type: input
+    id: existing-feature
+    attributes:
+      label: Existing feature being improved
+      description: What feature does this enhance? Include a file path or screen name if helpful.
+      placeholder: "Settings → About card — Privacy Policy / Support rows"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behaviour
+    attributes:
+      label: Current behaviour
+      description: Describe how it works today, with at least one concrete example.
+      placeholder: "Tapping a legal link opens an in-app SFSafariViewController. The dismiss control is a chevron in the top-right which is easy to miss on iPad."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-behaviour
+    attributes:
+      label: Proposed behaviour
+      description: Describe how it would work after this change, with the same example.
+      placeholder: "Tapping a legal link opens the page in Safari (the system browser) instead of the in-app browser, which gives users their familiar dismiss / share / reader controls."
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Reason and benefit
+      description: Why is this an improvement? Concrete impact, not generalities.
+      placeholder: "Two beta-testers reported they couldn't get back to the app after tapping the privacy link; both tried tapping the chevron and missed. Switching to the system browser uses the dismiss control they already know."
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope of changes
+      description: Files, modules, or systems expected to change.
+      placeholder: |
+        - AppSettingsView (Link rows — replace SFSafariView presentation with system browser)
+        - LegalLinks (no change)
+    validations:
+      required: true
+
+  - type: textarea
+    id: breaking
+    attributes:
+      label: Breaking changes
+      description: Does this break any existing user, API, or build behaviour? If so, describe the migration path. If not, write "None".
+      placeholder: "None — UI-only behaviour change."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you weigh and reject? Why?
+      placeholder: "Considered keeping in-app browser and adding a more prominent close button; rejected because it doesn't address the unfamiliar control."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area affected
+      multiple: true
+      options:
+        - UI / interaction
+        - Performance
+        - Accessibility
+        - Reliability / error handling
+        - Documentation / developer experience
+        - Build / release / infrastructure
+        - Other (note in description)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: pre-submission
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I searched existing issues for a duplicate or related proposal.
+          required: true
+        - label: I read the org-wide CONTRIBUTING.md and understand that PR work is gated on the `approved-enhancement` label.
+          required: true
+        - label: This is an improvement to an existing feature, not a new feature in disguise.
+          required: true
+        - label: I am willing to participate in design discussion before implementation begins.
+          required: true

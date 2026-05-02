@@ -1,0 +1,109 @@
+name: Chore
+description: Internal / maintenance work with no user-facing behaviour change.
+title: "chore: <one-line summary>"
+labels: ["chore", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for maintenance, refactoring, dependency bumps, or build-system work that has no user-facing behaviour change. If end users would notice the change, use Feature request or Enhancement instead.
+
+  - type: input
+    id: affected-repo
+    attributes:
+      label: Affected repo
+      placeholder: "colour-within-ios"
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: Maintenance task
+      description: What needs to be done?
+      placeholder: "Bump TelemetryDeck SPM dependency from 2.12.0 to the latest minor."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of maintenance
+      options:
+        - Dependency bump
+        - Refactor (no behaviour change)
+        - Build / CI / release pipeline
+        - Documentation-only update
+        - Test infrastructure
+        - Tooling / developer experience
+        - Cleanup of dead or duplicated code
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current state
+      description: What's there today, with the specifics needed to scope the work.
+      placeholder: |
+        - TelemetryDeck pinned at 2.12.0 in `project.yml`.
+        - Latest published version on SPM is 2.14.1 (verified 2026-05-02).
+        - Vendor PrivacyInfo.xcprivacy snapshot at `14-VENDOR-MANIFESTS/TelemetryDeck-PrivacyInfo.xcprivacy` is from the 2.12.0 release.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-work
+    attributes:
+      label: Proposed work
+      description: List the steps. Be honest about what's automatable vs what's manual.
+      placeholder: |
+        1. Bump version in project.yml.
+        2. xcodegen generate.
+        3. Run 14-VENDOR-MANIFESTS/extract.sh to refresh the privacy snapshot.
+        4. Re-run PrivacyManifestVendorEquivalenceTests.
+        5. Update 14-CONTEXT.md with new version + verification date per D-06.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: When is this done?
+      placeholder: |
+        - TelemetryDeck resolves to 2.14.1 in Package.resolved.
+        - 14-VENDOR-MANIFESTS/TelemetryDeck-PrivacyInfo.xcprivacy SHA-256 matches the SDK-bundled file.
+        - Full ColourWithinTests suite green.
+        - 14-CONTEXT.md verification date updated.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area affected
+      multiple: true
+      options:
+        - Dependencies
+        - Build / CI / release
+        - Tests
+        - Documentation
+        - Tooling / scripts
+        - Code (refactor or cleanup)
+        - Other (note in description)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: pre-submission
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I confirmed this work has no user-facing behaviour change. If it does, I'll re-file as a feature request or enhancement.
+          required: true
+        - label: I searched existing issues for a duplicate.
+          required: true
+        - label: I am willing to do (or help do) the work, not just file it.
+          required: true

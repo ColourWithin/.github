@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or discussion
+    url: https://github.com/orgs/ColourWithin/discussions
+    about: For questions, ideas, or open-ended discussion that isn't yet a concrete bug, feature, or chore.
+  - name: Security vulnerability
+    url: https://github.com/ColourWithin/.github/blob/main/SECURITY.md
+    about: Do not file a public issue for security reports. Use GitHub private vulnerability reporting instead.

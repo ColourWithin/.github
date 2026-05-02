@@ -1,0 +1,134 @@
+name: Feature request
+description: Propose new functionality.
+title: "feat: <one-line summary>"
+labels: ["feature-request", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a new feature. Per the org-wide [Contributing guide](https://github.com/ColourWithin/.github/blob/main/CONTRIBUTING.md), every feature must be filed and approved before a PR opens — please don't start coding until a maintainer applies the `approved-feature` label.
+
+  - type: input
+    id: affected-repo
+    attributes:
+      label: Affected repo
+      placeholder: "colour-within-ios"
+    validations:
+      required: true
+
+  - type: input
+    id: feature-name
+    attributes:
+      label: Feature name
+      description: A short, memorable name for the feature.
+      placeholder: "Subscription downgrade flow"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of addition
+      options:
+        - New user-facing feature
+        - New developer-facing capability (API, tool, library)
+        - New integration with an external service
+        - New build / release / infra capability
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What user problem or org problem does this solve? Be concrete — avoid "we need this for completeness".
+      placeholder: "Subscribers who change their mind partway through a billing cycle have no way to downgrade without contacting support, which delays the change and wastes maintainer time."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-is-being-added
+    attributes:
+      label: What is being added
+      description: Describe the proposed feature with at least one concrete example of the user experience.
+      placeholder: "A 'Manage subscription' row in Settings → Account that opens the StoreKit-managed downgrade flow, then refreshes the entitlement state."
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Full scope of changes
+      description: List the files, modules, or systems expected to change. Be honest about the blast radius.
+      placeholder: |
+        - Settings → Account (new row)
+        - SubscriptionManager (new flow)
+        - AppPreferences (no change)
+        - BackendReceiptValidator (new endpoint)
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User stories
+      description: At least two. "As a <role>, I want <capability>, so that <benefit>."
+      placeholder: |
+        1. As a yearly subscriber, I want to downgrade to monthly, so that I can keep paying without committing for another year.
+        2. As a free-tier user, I want to confirm I am not paying, so that I know my account state is clear.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable conditions that, taken together, mean the feature is done.
+      placeholder: |
+        - The "Manage subscription" row is visible to authenticated users with an active entitlement.
+        - Tapping it presents the StoreKit-managed flow within one second.
+        - After the flow completes, the entitlement state refreshes within five seconds without an app restart.
+        - Subscribers without an active entitlement see no row.
+    validations:
+      required: true
+
+  - type: textarea
+    id: breaking
+    attributes:
+      label: Breaking changes
+      description: Does this break any existing user, API, or build behaviour? If so, describe the migration path. If not, write "None".
+      placeholder: "None — additive."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you weigh and reject? Why?
+      placeholder: "Considered a deep-link to the App Store subscription page; rejected because it doesn't refresh the in-app entitlement state until next launch."
+    validations:
+      required: true
+
+  - type: textarea
+    id: maintenance
+    attributes:
+      label: Maintenance burden
+      description: What ongoing cost does this feature add — re-verification on SDK bumps, support load, monitoring, docs?
+      placeholder: "Add to the StoreKit smoke-test list; quarterly verification that the flow still resolves on current iOS."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: pre-submission
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I searched existing issues for a duplicate or related proposal.
+          required: true
+        - label: I read the org-wide CONTRIBUTING.md and understand that PR work is gated on the `approved-feature` label.
+          required: true
+        - label: I have considered the maintenance burden honestly.
+          required: true
+        - label: I am willing to participate in design discussion before implementation begins.
+          required: true

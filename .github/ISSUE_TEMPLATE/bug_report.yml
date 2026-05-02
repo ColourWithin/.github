@@ -1,0 +1,129 @@
+name: Bug report
+description: Something is broken or behaving unexpectedly.
+title: "bug: <one-line summary>"
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. Please fill in every required field — incomplete reports are returned for clarification before they're triaged.
+
+        **Do not paste credentials, tokens, or personally identifying information** into this form. The fields below ask only for context that doesn't require sensitive data.
+
+  - type: input
+    id: affected-repo
+    attributes:
+      label: Affected repo
+      description: Which ColourWithin repo is this bug in? (e.g. `colour-within-ios`, `colour-within-pages`)
+      placeholder: "colour-within-ios"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: App version, release tag, or commit SHA where you observed the bug.
+      placeholder: "v2.1.0 (build 142) — or 5fe6feec"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where did you reproduce this?
+      options:
+        - iPad (physical device)
+        - iPad simulator
+        - macOS
+        - Web (browser)
+        - CI / build pipeline
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version
+      description: e.g. iPadOS 18.4, macOS 15.2, Ubuntu 24.04
+      placeholder: "iPadOS 18.4"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the actual behaviour you observed.
+      placeholder: "When I tap the palette swatch, the whole screen goes black for two seconds then recovers."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-expected
+    attributes:
+      label: What did you expect?
+      description: Describe the behaviour you expected.
+      placeholder: "The swatch should highlight and the matching regions should glow within ~100ms."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: A numbered list. The more specific, the faster it can be triaged.
+      placeholder: |
+        1. Open the app from a cold start.
+        2. Tap the third bundle on the home screen.
+        3. Tap any palette swatch in the strip.
+        4. Observe the screen flash.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Frequency
+      description: How often does this happen?
+      options:
+        - Every time
+        - Most of the time
+        - Sometimes
+        - Once (haven't been able to reproduce)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity / impact
+      description: How serious is this?
+      options:
+        - Blocker — app is unusable or data is at risk
+        - Major — a primary feature is broken
+        - Minor — a secondary feature is broken or degraded
+        - Cosmetic — visual or wording issue with no functional impact
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots / video
+      description: Paste any relevant log lines, attach screenshots, or link a video. Drag-drop attachments work in this field.
+      placeholder: "Paste log lines or attach files."
+
+  - type: checkboxes
+    id: pre-submission
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I searched existing issues and confirmed this is not a duplicate.
+          required: true
+        - label: I removed any credentials, tokens, or personally identifying information from the fields above.
+          required: true
+        - label: I am willing to provide more detail or test a fix if asked.
+          required: true
