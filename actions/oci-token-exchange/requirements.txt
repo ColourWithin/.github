@@ -1,0 +1,3 @@
+oci>=2.173.1,<3
+requests
+cryptography
