@@ -64,7 +64,7 @@ Plans:
 Plans:
 - [x] 03-01: Correct requirements/roadmap and harden local release-readiness workflow — paths filter, SHA-pinned `actions/cache`, checksum-verified actionlint install, static checks, and local Python/npm gates
 - [x] 03-02: Document external `colour-within-ops` OCI IPT smoke handoff — workflow skeleton, evidence checklist, action README links, and non-goals
-- [ ] 03-03: Prepare v1.0.0 release-candidate gate — README release note, candidate-SHA choreography, external smoke evidence template, and local branch-protection verification
+- [x] 03-03: Prepare v1.0.0 release-candidate gate — README release note, candidate-SHA choreography, external smoke evidence template, and local branch-protection verification
 - [ ] 03-04: Manual signed `v1.0.0` tag — after merge to main and passed external smoke evidence for the exact `origin/main` SHA
 
 ## Progress
