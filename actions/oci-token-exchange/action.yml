@@ -1,0 +1,72 @@
+name: 'OCI Token Exchange'
+description: >-
+  Exchanges a GitHub Actions OIDC ID token for an OCI User Principal Session Token (UPST)
+  via Identity Propagation Trust. Writes OCI CLI config to disk and exports
+  OCI_CLI_AUTH=security_token for subsequent steps. Replaces
+  gtrevorrow/oci-token-exchange-action (CVE-2025-58754, wrong principal type).
+author: 'ColourWithin'
+
+inputs:
+  client-identifier:
+    description: 'OAuth client_id of the OCI Confidential Application (source from secrets.OCI_OIDC_CLIENT_IDENTIFIER)'
+    required: true
+  client-secret:
+    description: 'OAuth client_secret of the OCI Confidential Application (source from secrets.OCI_OIDC_CLIENT_SECRET)'
+    required: true
+  domain-base-url:
+    description: 'Identity Domain base URL, e.g. https://idcs-XXXX.identity.oraclecloud.com (source from vars.OCI_DOMAIN_BASE_URL)'
+    required: true
+  audience:
+    description: 'OIDC audience — must match allowedTokenAudiences on the Identity Propagation Trust'
+    required: false
+    default: 'https://github.com/ColourWithin'
+  region:
+    description: 'OCI region identifier for the resulting CLI/SDK config'
+    required: false
+    default: 'ap-sydney-1'
+  output-config-path:
+    description: 'Absolute path where the OCI CLI config file will be written'
+    required: false
+    default: '${{ runner.home }}/.oci/config'
+  output-key-path:
+    description: 'Absolute path where the ephemeral RSA private key will be written'
+    required: false
+    default: '${{ runner.home }}/.oci/upst.pem'
+
+outputs:
+  config-path:
+    description: 'Absolute path to the OCI CLI config file written by this action'
+    value: ${{ steps.exchange.outputs.config-path }}
+  expires-at:
+    description: 'ISO 8601 expiry timestamp of the UPST (useful for deciding whether to re-exchange)'
+    value: ${{ steps.exchange.outputs.expires-at }}
+
+runs:
+  using: composite
+  steps:
+    - id: exchange
+      name: OCI token exchange
+      shell: bash
+      env:
+        INPUT_CLIENT_IDENTIFIER: ${{ inputs.client-identifier }}
+        INPUT_CLIENT_SECRET: ${{ inputs.client-secret }}
+        INPUT_DOMAIN_BASE_URL: ${{ inputs.domain-base-url }}
+        INPUT_AUDIENCE: ${{ inputs.audience }}
+        INPUT_REGION: ${{ inputs.region }}
+        INPUT_OUTPUT_CONFIG_PATH: ${{ inputs.output-config-path }}
+        INPUT_OUTPUT_KEY_PATH: ${{ inputs.output-key-path }}
+      run: |
+        # Preflight: fail fast before incurring pip install cost (D-12)
+        # This check intentionally runs before pip install so a misconfigured
+        # workflow fails in <1s rather than waiting for install to complete.
+        if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+          echo "::error::Missing OIDC token permissions. Add the following to your workflow:"
+          echo "::error::permissions:"
+          echo "::error::  id-token: write"
+          echo "::error::  contents: read"
+          exit 1
+        fi
+
+        pip install --user 'oci>=2.173.1,<3' requests cryptography
+
+        python "${{ github.action_path }}/exchange.py"
