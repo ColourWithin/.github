@@ -1,56 +1,58 @@
 ---
 phase: 1
-review_cycle: 2
+review_cycle: 3
 reviewers: [codex]
-reviewed_at: 2026-05-09T20:50:54+10:00
+reviewed_at: 2026-05-09T20:58:54+10:00
 plans_reviewed:
   - 01-01-PLAN.md
   - 01-02-PLAN.md
 ---
 
-# Cross-AI Plan Review - Phase 1, Cycle 2
+# Cross-AI Plan Review - Phase 1, Cycle 3
 
-Cycle 2 was run after review-driven replanning. The prior cycle's HIGH concern around the raw `${{ inputs.* }}` grep is treated as historical context only unless it remains present in the current plan text.
+Cycle 3 was run after token-file-permission replanning. Prior-cycle HIGH concerns are treated as historical unless they remain unresolved in the current plan text.
+
+Latest dependency evidence checked before review:
+
+- PyPI `oci`: 2.173.1
+- `actions/checkout`: v6.0.2
+- `actions/cache`: v5.0.5
+- `rhysd/actionlint`: v1.7.12
 
 ## Codex Review
 
 ## Summary
 
-The cycle-2 plans are materially stronger than cycle 1: the previous HIGH concern around the broad `${{ inputs.* }}` grep is resolved by a scope-aware scanner that only inspects literal `run:` bodies. Overall, the phase is well-scoped and likely executable, but I would not call it fully ready yet because there is one current HIGH security gap: the UPST token file is written without an explicit restrictive mode.
+Cycle 3 looks ready to execute. The prior HIGH token-file-permission concern is fully resolved in the current plan text: `upst.token` is explicitly written with `chmod 600`, the private key remains `chmod 600`, the generated OCI config is also restricted to `chmod 600`, and the test suite is required to cover token-file permissions. The plan quality is strong overall: it is specific, traceable to TOKEX requirements and decisions, and it correctly handles the OCI SDK's eager constructor and vendored `requests` exceptions.
 
 ## Strengths
 
-- The prior HIGH issue is resolved: legitimate `env:` mappings are preserved, while `${{ inputs.* }}` inside `run:` blocks is still blocked.
-- Good phase split: Python/token logic first, then composite action wiring, README, and CI.
-- Strong handling of OCI SDK quirks: eager `TokenExchangeSigner` constructor and vendored `oci._vendor.requests` exceptions are correctly called out.
-- Good fail-fast UX for missing `id-token: write`, before `pip install`.
-- Dependency freshness evidence still checks out: `oci 2.173.1`, `actions/checkout v6.0.2`, and `actionlint v1.7.12` are current from official APIs as of this review.
+- Clear security closure: UPST bearer credential, private key, and OCI config now all get explicit restrictive permissions.
+- Good SDK fidelity: the plan correctly wraps `TokenExchangeSigner(...)` construction, catches `oci._vendor.requests` exceptions, and avoids inventing a parallel token-exchange implementation.
+- Strong injection discipline: inputs are mapped through `env:` and the CI scanner only checks literal `run:` bodies, avoiding the earlier false-positive problem.
+- Good fail-fast UX: missing OIDC permission is detected before dependency install and prints the exact YAML fix.
+- Scope is well contained: Phase 1 owns token exchange, README, unit tests, and lint only; OCI smoke testing and release/tag work stay deferred.
+- README requirements are unusually concrete and should prevent the common audience, UPST lifetime, doubled `.github` path, and self-hosted-runner misunderstandings.
 
 ## Concerns
 
-- **HIGH:** `upst.token` is written with default file permissions. The UPST is a bearer credential, so relying on runner umask is too loose, especially because the README explicitly discusses self-hosted runner persistence. The plan should `chmod 600` the token file, and likely the config file too.
-- **MEDIUM:** The test import template will likely fail `ruff E402`: `from exchange import ...` appears after `sys.path.insert(...)` without `# noqa: E402`. `conftest.py` also includes an unused `os` import.
-- **MEDIUM:** The workflow says "SHA-pinned actionlint binary download" in validation language, but the actual plan only version-pins the tarball and performs no checksum verification.
-- **LOW:** Some negative-grep verification commands are written as if "no output" equals success, but bare `grep` exits 1 when no match is found. Fine for manual checks, brittle if copied into automated scripts.
-- **LOW:** Prefer `python -m pip install ...` over bare `pip install ...` for runner clarity.
+- **MEDIUM:** `pip install --user 'oci>=2.173.1,<3' requests cryptography` in `action.yml` does not use `python -m pip`. This usually works on GitHub-hosted runners, but `python -m pip` is more deterministic and avoids PATH/interpreter ambiguity.
+- **MEDIUM:** The actionlint install is version-pinned but not integrity-verified. This is acceptable if the project intentionally accepts GitHub release tarball trust for Phase 1, but the plan should avoid implying it is SHA-verified.
+- **LOW:** The retry loop uses `DELAYS = [0.5, 1.0, 2.0, 4.0]` with `MAX_ATTEMPTS = 4`, but only the first three delays are slept. That is logically fine, but the fourth value is misleading.
+- **LOW:** `token_path.write_text(upst)` uses default encoding. Fine in practice for JWT text, but `encoding="utf-8"` would make the file contract explicit.
+- **LOW:** The README says the replaced action produced `principal.type = 'user' rather than 'workload'`, while this phase explicitly defers runtime workload-claim assertion. That is okay as motivation, but README wording should avoid implying this action proves the claim before TOKEX-V2-01 ships.
 
 ## Suggestions
 
-- Add explicit permissions after writing credential files: `os.chmod(token_path, 0o600)` and consider `os.chmod(config_path, 0o600)`.
-- Add a test for token-file permissions, not only key-file permissions.
-- Fix the test import pattern before execution: either use `import exchange  # noqa: E402` only, or add `# noqa: E402` to every post-`sys.path` import.
-- Remove unused template imports before committing, especially `os` in `conftest.py`.
-- Either verify the actionlint tarball checksum or revise the wording so it accurately says "version-pinned" rather than "SHA-pinned."
+- Change action install commands to `python -m pip install --user ...` in `action.yml` and `python -m pip install ...` in CI.
+- Either add checksum verification for the actionlint tarball or consistently describe it as "version-pinned actionlint install," not SHA-pinned.
+- Replace `DELAYS = [0.5, 1.0, 2.0, 4.0]` with `DELAYS = [0.5, 1.0, 2.0]`, or rename/comment it so the unused final value is not confusing.
+- Write credential text files with explicit encoding, e.g. `token_path.write_text(upst, encoding="utf-8")`.
+- In README, phrase the principal-type point as "designed to support the Service User/IPT path; runtime workload assertion is planned for v1.1" unless the implementation actually validates it now.
 
 ## Risk Assessment
 
-**Overall risk: MEDIUM.** The architecture and sequencing are sound, and the prior cycle's HIGH CI-scanner defect is resolved. The remaining blocker is narrower but security-relevant: a UPST file should not be left to default filesystem permissions. Once that is fixed, the residual risks are mostly CI polish and implementation hygiene.
-
-Sources checked:
-
-- PyPI `oci` JSON: https://pypi.org/pypi/oci/json
-- `actions/checkout` latest release API: https://api.github.com/repos/actions/checkout/releases/latest
-- `rhysd/actionlint` latest release API: https://api.github.com/repos/rhysd/actionlint/releases/latest
+**Overall risk: LOW to MEDIUM.** The current plans achieve the Phase 1 goal and directly resolve the previous HIGH token-permission issue. Remaining risks are mostly execution polish and supply-chain hardening around auxiliary CI tooling, not core architecture blockers. The plan is specific enough that a competent execution pass should produce the intended action with meaningful unit coverage.
 
 ---
 
@@ -60,16 +62,17 @@ Only the requested Codex reviewer was invoked in this cycle, so consensus means 
 
 ### Agreed Strengths
 
-- The cycle-1 HIGH concern about an over-broad `${{ inputs.* }}` grep is fully resolved in the current Phase 1 plans by a scope-aware run-body scanner.
-- The phase split remains sound: Plan 01-01 owns the Python token-exchange logic and tests; Plan 01-02 owns composite wiring, README, and the unit-test workflow.
-- The current plans preserve the important security boundaries around OIDC preflight, env-only input transfer, no xtrace, raw OCI 4xx surfacing, vendored OCI exceptions, and dependency freshness.
+- The prior HIGH token-file-permission concern is fully resolved in the current plans by explicit `chmod 600` handling for `upst.token`, retained `chmod 600` handling for `upst.pem`, and token-file permission test coverage.
+- The Phase 1 plan remains tightly scoped to token exchange, README, unit tests, and linting, with real OCI smoke testing and release gates deferred to later phases.
+- The plans preserve the important security controls around env-only input transfer, OIDC preflight, no `set -x`, vendored OCI exception handling, and no 4xx retries.
 
 ### Agreed Concerns
 
-- **HIGH:** `upst.token` is a bearer credential but the current plans do not require explicit restrictive permissions on the token file. The plan should require `chmod 600` for `upst.token`, add a test for that permission, and strongly consider the same explicit mode for the generated OCI config file.
-- **MEDIUM:** The test template/import guidance may trip ruff (`E402` after `sys.path.insert`, unused imports) unless the execution pass cleans it up.
-- **MEDIUM:** The actionlint installation language should be made truthful: the plan version-pins the release tarball, but does not checksum/SHA-verify the downloaded binary.
-- **LOW:** Manual negative-grep checks are acceptable for operator verification, but any automated copy should guard expected no-match exits with `! grep ...` or equivalent.
+- **MEDIUM:** Prefer `python -m pip` over bare `pip` in the action and CI install commands for interpreter determinism.
+- **MEDIUM:** The actionlint installation is version-pinned but not checksum/SHA verified; either add integrity verification or keep the wording truthful as version-pinned only.
+- **LOW:** The retry delay constant includes an unused final `4.0` value under the current loop structure.
+- **LOW:** Credential text writes should use explicit UTF-8 encoding.
+- **LOW:** README motivation around the upstream wrong-principal defect should not imply this phase performs runtime workload-claim verification, which is deferred to v1.1.
 
 ### Divergent Views
 
@@ -77,8 +80,9 @@ Only the requested Codex reviewer was invoked in this cycle, so consensus means 
 
 ### Current HIGH Concerns
 
-- `upst.token` is written without an explicit restrictive file mode; because it is a bearer credential and the README discusses self-hosted runner persistence, relying on the runner umask is not sufficient.
+None.
 
 ### Resolved Prior HIGH Concerns
 
-- Cycle-1 HIGH: the raw grep for `${{ inputs.* }}` in `action.yml` would have flagged legitimate `env:` mappings. Cycle 2 resolves this with a scope-aware scanner that only inspects literal `run:` block bodies.
+- Cycle-1 HIGH: the raw grep for `${{ inputs.* }}` in `action.yml` would have flagged legitimate `env:` mappings. Cycle 2 resolved this with a scope-aware scanner that only inspects literal `run:` block bodies.
+- Cycle-2 HIGH: `upst.token` was written without explicit restrictive file permissions. Cycle 3 resolves this with explicit `chmod 600` handling for the token file, retained restrictive private-key handling, restrictive config-file handling, and token-file permission test coverage.
