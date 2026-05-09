@@ -1,4 +1,3 @@
-import { EventEmitter } from "node:events";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const outputs = new Map<string, string>();
@@ -25,8 +24,8 @@ vi.mock("@actions/core", () => ({
 
 vi.mock("@actions/exec", () => ({
   exec: vi.fn(async (_tool: string, _args: string[], options: { listeners?: { stdout?: (data: Buffer) => void; stderr?: (data: Buffer) => void } }) => {
-    options.listeners?.stdout?.(Buffer.from("  value\\n"));
-    options.listeners?.stderr?.(Buffer.from("diagnostic\\n"));
+    options.listeners?.stdout?.(Buffer.from("  value\n"));
+    options.listeners?.stderr?.(Buffer.from("diagnostic\n"));
     return 0;
   })
 }));
@@ -64,5 +63,21 @@ describe("run", () => {
     const { run } = await import("../src/index");
     await run();
     expect(infos.join("\n")).not.toContain("iam region list");
+  });
+
+  it("sets all outputs before failing on a non-zero OCI exit", async () => {
+    const execModule = await import("@actions/exec");
+    vi.mocked(execModule.exec).mockImplementationOnce(async (_tool, _args, options) => {
+      options.listeners?.stdout?.(Buffer.from("  value\n"));
+      options.listeners?.stderr?.(Buffer.from("diagnostic\n"));
+      return 7;
+    });
+    const { run } = await import("../src/index");
+    await run();
+    expect(outputs.get("output")).toBe("value");
+    expect(outputs.get("raw-output")).toBe("  value\n");
+    expect(outputs.get("exit-code")).toBe("7");
+    expect(outputs.get("oci-cli-version")).toBe("3.81.1");
+    expect(failed).toContain("exit code 7");
   });
 });
