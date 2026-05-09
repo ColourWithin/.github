@@ -1,12 +1,15 @@
 ---
 phase: 3
 reviewers: [gemini, claude]
-reviewed_at: 2026-05-10T00:00:00+10:00
+reviewed_at: 2026-05-10T00:24:39+10:00
 plans_reviewed:
   - 03-01-PLAN.md
   - 03-02-PLAN.md
   - 03-03-PLAN.md
-cycle: 1
+  - 03-04-PLAN.md
+cycles: 2
+convergence_status: converged
+current_high_concerns: 0
 ---
 
 # Cross-AI Plan Review - Phase 3
@@ -173,3 +176,76 @@ The release-gate plan has the right human checkpoint structure. The evidence fil
 
 - Candidate SHA flow has no single source of truth: the plans do not yet structurally define the exact release commit that `colour-within-ops` must smoke and that `v1.0.0` must tag.
 - Plan 03-03 conflates release-artifact preparation with final tag execution; the plan should split or hard-gate tagging so the candidate commit lands on `main`, external smoke verifies that exact SHA, and only then is the tag created.
+
+---
+
+# Cross-AI Plan Review - Phase 3 - Convergence Cycle 2
+
+## Gemini Review
+
+# Cross-AI Plan Review - Phase 3 (Convergence Cycle 2)
+
+## 1. Cycle 1 HIGH Concerns Evaluation
+
+- **Candidate SHA flow had no single source of truth:** **FULLY RESOLVED**. Plan 03-03 introduces `03-RELEASE-DANCE.md` which explicitly defines the sequence and strict equality checks (`git rev-parse origin/main` == evidence candidate SHA == tag target). This provides a concrete, auditable source of truth.
+- **Plan 03-03 conflates release-artifact preparation with final tag execution:** **FULLY RESOLVED**. The final tag execution has been cleanly extracted into a new manual plan (`03-04-PLAN.md`). This structurally enforces that the release branch must merge to `main`, the external smoke must run against that exact `origin/main` SHA, and only then is the tag created.
+
+## 2. Current Concerns
+
+- **[LOW] `uses:` syntax space typo in Plan 03-01 Task 3:** The task instruction asks to create a static check that requires "the ref after ` @` to match exactly `[0-9a-f]{40}`". It includes a literal space before the `@`. GitHub Actions syntax does not use a space before the `@` (e.g., `uses: actions/checkout@<sha>`). The executor should be instructed to check for `@` without the preceding space to ensure the regex isn't brittle or incorrect.
+- **[LOW] README and Markdown ` @<sha>` references:** Similarly, Plan 03-03 Task 1 instructs updating the README with `ColourWithin/.github/actions/oci-token-exchange @<sha>`. While acceptable for Markdown readability, the executor should be mindful not to propagate this space into actual YAML snippets where it would cause syntax errors.
+
+All previous Cycle 1 MEDIUM and LOW concerns were marked cleanly addressed.
+
+## 3. Overall Risk
+
+**LOW RISK.**
+
+The plans are approved and ready for execution.
+
+## Claude Review
+
+# Phase 3 Plan Review - Cycle 2
+
+## Resolution of Cycle 1 HIGH Concerns
+
+**Both Cycle 1 HIGH concerns are FULLY RESOLVED.**
+
+1. **Candidate SHA single source of truth** - Resolved. New `03-RELEASE-DANCE.md` (Plan 03-03 Task 2) is explicitly named the single source of truth, defines the sequence (merge -> `git rev-parse origin/main` -> ops smoke with that SHA -> evidence -> tag), and enumerates three equality checks. `03-EXTERNAL-SMOKE-EVIDENCE.md` and Plan 03-04 Task 1 both reference `git rev-parse origin/main` as the authoritative value.
+
+2. **Tag execution split from artifact prep** - Resolved. Plan 03-03 contains zero `git tag` commands and explicitly states "This plan does not create the tag." Plan 03-04 is a new wave-3, `autonomous: false` plan that owns final tag creation, with hard equality checks against the smoke-tested SHA, a no-unsigned-fallback rule, and an explicit user-approval checkpoint before `git tag -s -a`.
+
+## Current Concerns
+
+### MEDIUM
+
+- **Plan 03-04 Task 3 - `git tag` target argument.** `$CANDIDATE_SHA` was captured in Task 1 and might not persist to Task 3. The plan should re-derive `CANDIDATE_SHA=$(git rev-parse origin/main)` immediately before the tag command.
+- **Plan 03-04 Task 3 - sign-only flag.** Add `git tag -v v1.0.0` after creation and before push to confirm the signature verifies.
+
+### LOW
+
+- Minor markdown/grep literal consistency issues in `03-RELEASE-DANCE.md` and `03-EXTERNAL-SMOKE-EVIDENCE.md`.
+- Pre-release filtering in Plan 03-01 is documented but not directly acceptance-gated.
+- Reorder final tag verification so `git rev-list -n 1 v1.0.0` equality is checked before pushing the tag.
+
+## Overall Risk
+
+**LOW.**
+
+Cycle 1's two HIGHs are resolved structurally, not just narratively. Plans are ready for execution after the two MEDIUM fixes in Plan 03-04 Task 3.
+
+## Convergence Summary
+
+### Current HIGH Concerns
+
+None.
+
+### Follow-up Plan Corrections Applied
+
+- Plan 03-04 Task 3 now re-fetches and re-derives `CANDIDATE_SHA=$(git rev-parse origin/main)` immediately before signed tag creation.
+- Plan 03-04 Task 3 now checks `git rev-list -n 1 v1.0.0` equals `$CANDIDATE_SHA` before pushing.
+- Plan 03-04 Task 3 now runs `git tag -v v1.0.0` before pushing and forbids pushing an unverifiable tag.
+
+### Result
+
+CYCLE_SUMMARY current_high=0 previous_high=2 status=converged
