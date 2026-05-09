@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "ncc build src/index.ts -o dist --license licenses.txt",
+    "build": "node scripts/patch-actions-toolkit-exports.mjs && ncc build src/index.ts -o dist --license licenses.txt",
     "licenses": "license-checker-rseidelsohn --production --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense'"
   },
   "dependencies": {

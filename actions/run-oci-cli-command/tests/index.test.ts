@@ -67,7 +67,7 @@ describe("run", () => {
 
   it("sets all outputs before failing on a non-zero OCI exit", async () => {
     const execModule = await import("@actions/exec");
-    vi.mocked(execModule.exec).mockImplementationOnce(async (_tool, _args, options) => {
+    vi.mocked(execModule.exec).mockImplementationOnce(async (_tool, _args, options = {}) => {
       options.listeners?.stdout?.(Buffer.from("  value\n"));
       options.listeners?.stderr?.(Buffer.from("diagnostic\n"));
       return 7;
