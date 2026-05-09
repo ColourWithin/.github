@@ -63,6 +63,19 @@ describe("parseCommand", () => {
     }
   });
 
+  it("rejects query input when command already includes --query=", () => {
+    const cwd = tempDir();
+    try {
+      expect(() => parseCommand({
+        command: "oci iam region list --query=data[0].name",
+        query: "data[1].name",
+        workingDirectory: cwd
+      })).toThrow(/query input cannot be used when command already includes --query/);
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  });
+
   it.each([
     ["empty command", ""],
     ["non-oci command", "echo hello"],

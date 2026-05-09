@@ -28137,7 +28137,7 @@ function parseCommand(options) {
     const query = options.query?.trim() ?? "";
     const args = argv.slice(1);
     if (query.length > 0) {
-        if (args.includes("--query")) {
+        if (args.some((arg) => arg === "--query" || arg.startsWith("--query="))) {
             throw new Error("query input cannot be used when command already includes --query");
         }
         args.push("--query", query);

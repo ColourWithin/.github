@@ -1,3 +1,3 @@
 oci>=2.173.1,<3
-requests
-cryptography
+requests==2.33.1
+cryptography==46.0.7
