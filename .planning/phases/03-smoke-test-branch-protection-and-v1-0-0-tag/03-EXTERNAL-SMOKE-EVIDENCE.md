@@ -1,7 +1,7 @@
 # Phase 3 External Smoke Evidence
 
-**Status:** pending
-**Candidate `.github` SHA:** <fill with `git rev-parse origin/main` after release branch merge>
+**Status:** on hold
+**Candidate `.github` SHA:** ed54146b1764cfe3a6c46644efd52850f7357509
 **Consumer repo:** `ColourWithin/colour-within-ops`
 **Workflow:** `.github/workflows/oci-ipt-smoke.yml`
 **Environment:** `production`
@@ -19,6 +19,12 @@
 - [ ] OCI command stdout parsed as JSON
 - [ ] `oci-cli-version` was `>=3.81.1`
 - [ ] No deploy or mutation step ran
+
+## Hold Reason
+
+OIDC / OCI Identity Propagation Trust smoke testing is on hold as of 2026-05-10. The current implementation path is not producing a reliable working auth flow, and the available public guidance is inconsistent enough that it is not acceptable release evidence.
+
+Do not create or push `v1.0.0` while this status is `on hold`. Resume only after the OCI/OIDC path has a real passed `colour-within-ops` smoke workflow run for the exact candidate `.github` SHA.
 
 ## Branch Protection
 
@@ -43,4 +49,4 @@ The active organisation ruleset is the protection mechanism for `main`. Do not a
 - `exit-code`:
 - `oci-cli-version`:
 - JSON parse result:
-- Notes:
+- Notes: OIDC/IPT smoke blocked; release tag intentionally withheld.

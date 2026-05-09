@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tag
-status: executing
-stopped_at: "Phase 3 stopped before 03-04: external smoke evidence pending after merge to main"
-last_updated: "2026-05-09T14:39:12.885Z"
-last_activity: 2026-05-09 -- Phase 03 execution started
+status: paused
+stopped_at: "Phase 3 paused before 03-04 tag creation: OCI/OIDC smoke path on hold"
+last_updated: "2026-05-10T06:58:56+10:00"
+last_activity: 2026-05-10 -- Phase 03 paused; OIDC/IPT smoke path on hold
 progress:
   total_phases: 3
   completed_phases: 1
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 
 ## Current Position
 
-Phase: 03 (smoke-test-branch-protection-and-v1-0-0-tag) — EXECUTING
-Plan: 1 of 4
-Status: Executing Phase 03
-Last activity: 2026-05-09 -- Phase 03 execution started
+Phase: 03 (smoke-test-branch-protection-and-v1-0-0-tag) — PAUSED
+Plan: 4 of 4
+Status: Paused before signed `v1.0.0` tag creation; external OCI/OIDC smoke evidence is on hold
+Last activity: 2026-05-10 -- Phase 03 paused; OIDC/IPT smoke path on hold
 
 Progress: [██████░░░░] 57%
 
@@ -68,6 +68,7 @@ None yet.
 ### Blockers/Concerns
 
 - **Phase 3 external dependency:** Smoke test requires `colour-within-ops` Phase 02 B to populate `OCI_OIDC_CLIENT_IDENTIFIER` / `OCI_OIDC_CLIENT_SECRET` / `OCI_DOMAIN_BASE_URL` in this repo's secrets/vars before required check is activated
+- **Phase 3 release hold:** OCI/OIDC Identity Propagation Trust smoke testing is on hold because the current auth path does not work reliably enough to support `v1.0.0` release evidence. Do not create or push `v1.0.0` until a real `colour-within-ops` smoke workflow passes against the exact `.github` candidate SHA.
 - **PRD typo correction:** `requested_token_type` literal is `urn:oci:token-type:oci-upst` (not the shorter form in PRD §3) — captured in TOKEX-04
 - **Multiline secret masking:** UPST must be `.strip()`'d before `core.setSecret` (toolkit issue #1421) — captured in TOKEX-08
 
@@ -82,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-09T14:39:12.879Z
-Stopped at: Phase 3 stopped before 03-04: external smoke evidence pending after merge to main
+Last session: 2026-05-10T06:58:56+10:00
+Stopped at: Phase 3 paused before 03-04: OIDC/IPT smoke path on hold
 Resume file: .planning/phases/03-smoke-test-branch-protection-and-v1-0-0-tag/03-EXTERNAL-SMOKE-EVIDENCE.md

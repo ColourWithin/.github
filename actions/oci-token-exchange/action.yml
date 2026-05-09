@@ -23,7 +23,7 @@ inputs:
   region:
     description: 'OCI region identifier for the resulting CLI/SDK config'
     required: false
-    default: 'ap-sydney-1'
+    default: 'us-ashburn-1'
   output-config-path:
     description: 'Path where the OCI CLI config file will be written; ~ is supported'
     required: false

@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import time
+from functools import partial
 from pathlib import Path
 
 import oci
@@ -175,7 +176,7 @@ def main() -> None:
     client_secret = required_env("INPUT_CLIENT_SECRET")
     domain_url = required_env("INPUT_DOMAIN_BASE_URL")
     audience = os.environ.get("INPUT_AUDIENCE", "https://github.com/ColourWithin")
-    region = os.environ.get("INPUT_REGION", "ap-sydney-1")
+    region = os.environ.get("INPUT_REGION", "us-ashburn-1")
 
     mask(client_secret)
     debug_logging_enabled = enable_sdk_debug_logging()
@@ -188,8 +189,10 @@ def main() -> None:
     key_path.parent.mkdir(parents=True, exist_ok=True)
     token_path.parent.mkdir(parents=True, exist_ok=True)
 
+    jwt_func = partial(get_jwt, audience)
+
     signer = exchange_with_retry(
-        lambda: get_jwt(audience),
+        jwt_func,
         domain_url,
         client_identifier,
         client_secret,
