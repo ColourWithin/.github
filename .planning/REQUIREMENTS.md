@@ -35,20 +35,20 @@
 
 ### Smoke Test Workflow (`workflows/test-actions.yml`)
 
-- [ ] **SMOKE-01**: Local `.github/workflows/test-actions.yml` triggers on PR-to-main when files under `actions/**`, `docs/actions/**`, `README.md`, or `.github/workflows/test-actions.yml` change
-- [ ] **SMOKE-02**: External `colour-within-ops/.github/workflows/oci-ipt-smoke.yml` declares `permissions: { id-token: write, contents: read }`
-- [ ] **SMOKE-03**: External smoke exercises `ColourWithin/.github/actions/oci-token-exchange@<candidate-sha>` from `colour-within-ops`, using `environment: production`, audience `https://github.com/ColourWithin/colour-within-ops`, and the ops repo's OCI client/domain values
-- [ ] **SMOKE-04**: External smoke exercises `ColourWithin/.github/actions/run-oci-cli-command@<candidate-sha>` chained after token exchange
-- [ ] **SMOKE-05**: External smoke first-choice read command is `oci os ns get`, with fallback to a documented read-only permission-scoped command if policy proof requires it
-- [ ] **SMOKE-06**: Local `.github` workflow uses SHA-pinned `actions/cache` for pip cache keyed on `hashFiles('actions/oci-token-exchange/requirements.txt', 'actions/oci-token-exchange/pyproject.toml')`
-- [ ] **SMOKE-07**: Branch protection in `.github` requires local release-readiness checks only, while external smoke evidence is a manual pre-tag gate
+- [x] **SMOKE-01**: Local `.github/workflows/test-actions.yml` triggers on PR-to-main when files under `actions/**`, `docs/actions/**`, `README.md`, or `.github/workflows/test-actions.yml` change
+- [x] **SMOKE-02**: External `colour-within-ops/.github/workflows/oci-ipt-smoke.yml` declares `permissions: { id-token: write, contents: read }`
+- [x] **SMOKE-03**: External smoke exercises `ColourWithin/.github/actions/oci-token-exchange@<candidate-sha>` from `colour-within-ops`, using `environment: production`, audience `https://github.com/ColourWithin/colour-within-ops`, and the ops repo's OCI client/domain values
+- [x] **SMOKE-04**: External smoke exercises `ColourWithin/.github/actions/run-oci-cli-command@<candidate-sha>` chained after token exchange
+- [x] **SMOKE-05**: External smoke first-choice read command is `oci os ns get`, with fallback to a documented read-only permission-scoped command if policy proof requires it
+- [x] **SMOKE-06**: Local `.github` workflow uses SHA-pinned `actions/cache` for pip cache keyed on `hashFiles('actions/oci-token-exchange/requirements.txt', 'actions/oci-token-exchange/pyproject.toml')`
+- [x] **SMOKE-07**: Branch protection in `.github` requires local release-readiness checks only, while external smoke evidence is a manual pre-tag gate
 
 ### Release & Consumption
 
 - [ ] **REL-01**: Repository tagged `v1.0.0` after smoke tests pass and both action READMEs exist
-- [ ] **REL-02**: Top-level `README.md` (or supplementary `actions/README.md`) documents the SHA-pinned consumption pattern, doubled-`.github` path explanation, and consumer prerequisites
-- [ ] **REL-03**: All third-party action references (`actions/checkout`, `actions/cache`, etc.) in `workflows/test-actions.yml` are SHA-pinned, not tag-pinned
-- [ ] **REL-04**: Consumer-facing changelog entry in repo `README.md` notes initial v1.0.0 surface area and known limitations (60-min UPST ceiling, OCI CLI session-token-refresh bug oracle/oci-cli#998)
+- [x] **REL-02**: Top-level `README.md` (or supplementary `actions/README.md`) documents the SHA-pinned consumption pattern, doubled-`.github` path explanation, and consumer prerequisites
+- [x] **REL-03**: All third-party action references (`actions/checkout`, `actions/cache`, etc.) in `workflows/test-actions.yml` are SHA-pinned, not tag-pinned
+- [x] **REL-04**: Consumer-facing changelog entry in repo `README.md` notes initial v1.0.0 surface area and known limitations (60-min UPST ceiling, OCI CLI session-token-refresh bug oracle/oci-cli#998)
 
 ## v2 Requirements
 
@@ -111,17 +111,17 @@ Deferred to v1.1 / v2.
 | CLIRUN-06 | Phase 2 | Complete |
 | CLIRUN-07 | Phase 2 | Complete |
 | CLIRUN-08 | Phase 2 | Complete |
-| SMOKE-01 | Phase 3 | Pending |
-| SMOKE-02 | Phase 3 | Pending |
-| SMOKE-03 | Phase 3 | Pending |
-| SMOKE-04 | Phase 3 | Pending |
-| SMOKE-05 | Phase 3 | Pending |
-| SMOKE-06 | Phase 3 | Pending |
-| SMOKE-07 | Phase 3 | Pending |
+| SMOKE-01 | Phase 3 | Complete |
+| SMOKE-02 | Phase 3 | Complete |
+| SMOKE-03 | Phase 3 | Complete |
+| SMOKE-04 | Phase 3 | Complete |
+| SMOKE-05 | Phase 3 | Complete |
+| SMOKE-06 | Phase 3 | Complete |
+| SMOKE-07 | Phase 3 | Complete |
 | REL-01 | Phase 3 | Pending |
-| REL-02 | Phase 3 | Pending |
-| REL-03 | Phase 3 | Pending |
-| REL-04 | Phase 3 | Pending |
+| REL-02 | Phase 3 | Complete |
+| REL-03 | Phase 3 | Complete |
+| REL-04 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 33 total (14 TOKEX + 8 CLIRUN + 7 SMOKE + 4 REL)
