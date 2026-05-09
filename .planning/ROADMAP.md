@@ -13,7 +13,7 @@ Three phases deliver first-party GitHub actions that replace unmaintained third-
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: OCI Token Exchange Action** - Build `actions/oci-token-exchange`: composite + Python action that mints a GitHub OIDC ID token, exchanges it for an OCI UPST via Identity Propagation Trust, writes OCI CLI config to disk, masks secrets, and emits outputs
-- [ ] **Phase 2: OCI CLI Wrapper Action** - Build `actions/run-oci-cli-command`: TypeScript JavaScript action that installs/upgrades OCI CLI, parses `oci ...` commands into argv, executes without a shell, and captures output/exit-code diagnostics
+- [x] **Phase 2: OCI CLI Wrapper Action** - Build `actions/run-oci-cli-command`: TypeScript JavaScript action that installs/upgrades OCI CLI, parses `oci ...` commands into argv, executes without a shell, and captures output/exit-code diagnostics
 - [ ] **Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag** - Activate `workflows/test-actions.yml` as a required PR status check using permission-scoped OCI API assertion, apply branch protection, and tag v1.0.0
 
 ## Phase Details
@@ -32,8 +32,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Implement `exchange.py` — OIDC token mint, RSA keygen, token exchange POST with retry, config write, secret masking, output emission
-- [ ] 01-02: Wire `action.yml` composite entrypoint — inputs/outputs declaration, env-var passing to `exchange.py`, `requirements.txt`, action README
+- [x] 01-01: Implement `exchange.py` — OIDC token mint, RSA keygen, token exchange POST with retry, config write, secret masking, output emission
+- [x] 01-02: Wire `action.yml` composite entrypoint — inputs/outputs declaration, env-var passing to `exchange.py`, `requirements.txt`, action README
 
 ### Phase 2: OCI CLI Wrapper Action
 **Goal**: A consumer workflow can call `actions/run-oci-cli-command` after `actions/oci-token-exchange` and receive the OCI CLI command's stdout and exit code as step outputs
@@ -48,7 +48,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Implement TypeScript OCI CLI wrapper action — package, parser, install/version sentinel, argv execution, outputs, docs, Dependabot, npm CI gates, committed ncc bundle
+- [x] 02-01: Implement TypeScript OCI CLI wrapper action — package, parser, install/version sentinel, argv execution, outputs, docs, Dependabot, npm CI gates, committed ncc bundle
 
 ### Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag
 **Goal**: Both actions are verified end-to-end against real OCI on every PR that touches action files, merging to main is blocked without a passing smoke test, and `v1.0.0` is tagged for SHA-pinned consumer consumption
@@ -73,6 +73,6 @@ Phases 1 and 2 can be developed concurrently (code); Phase 2 integration testing
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. OCI Token Exchange Action | 0/2 | Not started | - |
-| 2. OCI CLI Wrapper Action | 0/1 | Not started | - |
+| 1. OCI Token Exchange Action | 2/2 | Complete | 2026-05-09 |
+| 2. OCI CLI Wrapper Action | 1/1 | Complete | 2026-05-09 |
 | 3. Smoke Test, Branch Protection, and v1.0.0 Tag | 0/2 | Not started | - |
