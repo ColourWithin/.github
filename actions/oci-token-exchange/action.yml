@@ -25,11 +25,11 @@ inputs:
     required: false
     default: 'ap-sydney-1'
   output-config-path:
-    description: 'Absolute path where the OCI CLI config file will be written'
+    description: 'Path where the OCI CLI config file will be written; ~ is supported'
     required: false
     default: '~/.oci/config'
   output-key-path:
-    description: 'Absolute path where the ephemeral RSA private key will be written'
+    description: 'Path where the ephemeral RSA private key will be written; ~ is supported'
     required: false
     default: '~/.oci/upst.pem'
 

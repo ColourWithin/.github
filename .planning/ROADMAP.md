@@ -76,4 +76,4 @@ Phases 1 and 2 can be developed concurrently (code); Phase 2 integration testing
 |-------|----------------|--------|-----------|
 | 1. OCI Token Exchange Action | 2/2 | Complete | 2026-05-09 |
 | 2. OCI CLI Wrapper Action | 1/1 | Complete | 2026-05-09 |
-| 3. Smoke Test, Branch Protection, and v1.0.0 Tag | 0/4 | In Progress | - |
+| 3. Smoke Test, Branch Protection, and v1.0.0 Tag | 3/4 | In Progress | - |

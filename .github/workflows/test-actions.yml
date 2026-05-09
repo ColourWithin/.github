@@ -90,12 +90,18 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          text = Path(".github/workflows/test-actions.yml").read_text()
           action_ref = "oci-token" + "-exchange"
           client_identifier = "OCI_OIDC_CLIENT" + "_IDENTIFIER"
+          failures = []
 
-          if action_ref in text and client_identifier in text:
-              print("::error::.github workflows must not run real OCI token exchange locally")
+          for path in sorted(Path(".github/workflows").glob("*.y*ml")):
+              text = path.read_text()
+              if action_ref in text and client_identifier in text:
+                  failures.append(path)
+
+          if failures:
+              for path in failures:
+                  print(f"::error file={path}::.github workflows must not run real OCI token exchange locally")
               raise SystemExit(1)
 
           print("OK: no local real OCI smoke in .github repo")
