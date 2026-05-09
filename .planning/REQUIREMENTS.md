@@ -35,13 +35,13 @@
 
 ### Smoke Test Workflow (`workflows/test-actions.yml`)
 
-- [ ] **SMOKE-01**: Workflow triggers on PR-to-main when files under `actions/**` or `.github/workflows/test-actions.yml` change
-- [ ] **SMOKE-02**: Workflow declares `permissions: { id-token: write, contents: read }`
-- [ ] **SMOKE-03**: Workflow exercises `actions/oci-token-exchange@${{ github.sha }}` (self-reference to the PR's own code) using `OCI_OIDC_CLIENT_IDENTIFIER` / `OCI_OIDC_CLIENT_SECRET` / `OCI_DOMAIN_BASE_URL` from this repo's secrets/variables
-- [ ] **SMOKE-04**: Workflow exercises `actions/run-oci-cli-command@${{ github.sha }}` chained off the token-exchange step
-- [ ] **SMOKE-05**: Workflow asserts a permission-scoped OCI call succeeds (e.g. `oci iam compartment list --compartment-id <tenancy-ocid>` or similar policy-gated call) — NOT just `oci iam region list`, which any authenticated principal passes regardless of `principal.type`
-- [ ] **SMOKE-06**: Workflow uses `actions/cache@v5.0.5` with `path: ~/.cache/pip` keyed on `hashFiles('actions/oci-token-exchange/requirements.txt')` to amortise SDK install across runs
-- [ ] **SMOKE-07**: Smoke test is a required check on PR-to-main via branch protection rule
+- [ ] **SMOKE-01**: Local `.github/workflows/test-actions.yml` triggers on PR-to-main when files under `actions/**`, `docs/actions/**`, `README.md`, or `.github/workflows/test-actions.yml` change
+- [ ] **SMOKE-02**: External `colour-within-ops/.github/workflows/oci-ipt-smoke.yml` declares `permissions: { id-token: write, contents: read }`
+- [ ] **SMOKE-03**: External smoke exercises `ColourWithin/.github/actions/oci-token-exchange@<candidate-sha>` from `colour-within-ops`, using `environment: production`, audience `https://github.com/ColourWithin/colour-within-ops`, and the ops repo's OCI client/domain values
+- [ ] **SMOKE-04**: External smoke exercises `ColourWithin/.github/actions/run-oci-cli-command@<candidate-sha>` chained after token exchange
+- [ ] **SMOKE-05**: External smoke first-choice read command is `oci os ns get`, with fallback to a documented read-only permission-scoped command if policy proof requires it
+- [ ] **SMOKE-06**: Local `.github` workflow uses SHA-pinned `actions/cache` for pip cache keyed on `hashFiles('actions/oci-token-exchange/requirements.txt', 'actions/oci-token-exchange/pyproject.toml')`
+- [ ] **SMOKE-07**: Branch protection in `.github` requires local release-readiness checks only, while external smoke evidence is a manual pre-tag gate
 
 ### Release & Consumption
 
