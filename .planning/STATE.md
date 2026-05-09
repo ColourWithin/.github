@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tag
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-05-09T10:31:25.100Z"
-last_activity: 2026-05-09 — Phase 1 planned (2 plans, 17-test suite, plan-checker PASS iteration 2)
+status: executing
+stopped_at: Phase 1 cycle-2 replan complete
+last_updated: "2026-05-09T10:55:16.324Z"
+last_activity: 2026-05-09 -- Phase 1 cycle-2 replan complete (2 plans; UPST token chmod 600 added; 18-test suite)
 progress:
   total_phases: 3
   completed_phases: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Workflows authenticate to OCI as properly-classified Service User via short-lived UPSTs, replacing unmaintained third-party actions.
-**Current focus:** Phase 1 — OCI Token Exchange Action (not started)
+**Current focus:** Phase 1 — OCI Token Exchange Action (ready to execute after cycle-2 replan)
 
 ## Current Position
 
 Phase: 1 of 3 (OCI Token Exchange Action)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-05-09 — Phase 1 planned (2 plans, 17-test suite, plan-checker PASS iteration 2)
+Plan: 2 plans ready
+Status: Ready to execute
+Last activity: 2026-05-09 -- Phase 1 cycle-2 replan complete (2 plans; UPST token chmod 600 added; 18-test suite)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -44,7 +44,7 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 — Token Exchange | — | — | — |
+| 1 — Token Exchange | 0/2 | — | — |
 | 2 — CLI Wrapper | — | — | — |
 | 3 — Smoke Test + Tag | — | — | — |
 
