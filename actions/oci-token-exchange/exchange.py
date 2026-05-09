@@ -1,6 +1,7 @@
 """OCI token exchange: mints a GitHub OIDC ID token and writes OCI CLI auth."""
 
 import datetime
+import logging
 import os
 import sys
 import time
@@ -14,6 +15,7 @@ from oci._vendor import requests as oci_requests
 
 MAX_ATTEMPTS = 4
 DELAYS = [0.5, 1.0, 2.0, 4.0]
+DEBUG_ENV = "OCI_TOKEN_EXCHANGE_DEBUG"
 
 
 def mask(value: str) -> None:
@@ -35,6 +37,22 @@ def get_jwt(audience: str) -> str:
     return response.json()["value"]
 
 
+def enable_sdk_debug_logging() -> bool:
+    """Enable OCI SDK and urllib debug output when requested."""
+    if os.environ.get(DEBUG_ENV) != "1":
+        return False
+
+    logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger("oci").setLevel(logging.DEBUG)
+    oci.base_client.is_http_log_enabled(True)
+    return True
+
+
+def disable_sdk_debug_logging() -> None:
+    """Disable verbose HTTP logging after a token-exchange attempt."""
+    oci.base_client.is_http_log_enabled(False)
+
+
 def exchange_with_retry(
     get_jwt_fn,
     domain_url: str,
@@ -46,7 +64,11 @@ def exchange_with_retry(
     for attempt, delay in enumerate(DELAYS):
         try:
             return oci.auth.signers.TokenExchangeSigner(
-                get_jwt_fn, domain_url, client_id, client_secret
+                get_jwt_fn,
+                domain_url,
+                client_id,
+                client_secret,
+                log_requests=os.environ.get(DEBUG_ENV) == "1",
             )
         except oci_requests.exceptions.HTTPError as exc:
             status = exc.response.status_code if exc.response is not None else 0
@@ -156,6 +178,7 @@ def main() -> None:
     region = os.environ.get("INPUT_REGION", "ap-sydney-1")
 
     mask(client_secret)
+    debug_logging_enabled = enable_sdk_debug_logging()
 
     config_path = input_path("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config")
     key_path = input_path("INPUT_OUTPUT_KEY_PATH", "~/.oci/upst.pem")
@@ -179,6 +202,8 @@ def main() -> None:
     write_output("config-path", str(config_path))
     write_output("expires-at", expires_at)
     write_env("OCI_CLI_AUTH", "security_token")
+    if debug_logging_enabled:
+        disable_sdk_debug_logging()
 
 
 if __name__ == "__main__":

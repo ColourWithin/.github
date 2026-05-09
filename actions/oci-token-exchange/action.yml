@@ -32,6 +32,10 @@ inputs:
     description: 'Path where the ephemeral RSA private key will be written; ~ is supported'
     required: false
     default: '~/.oci/upst.pem'
+  debug:
+    description: 'Enable verbose OCI SDK request logging for token-exchange diagnostics'
+    required: false
+    default: 'false'
 
 outputs:
   config-path:
@@ -55,6 +59,7 @@ runs:
         INPUT_REGION: ${{ inputs.region }}
         INPUT_OUTPUT_CONFIG_PATH: ${{ inputs.output-config-path }}
         INPUT_OUTPUT_KEY_PATH: ${{ inputs.output-key-path }}
+        OCI_TOKEN_EXCHANGE_DEBUG: ${{ inputs.debug == 'true' && '1' || '0' }}
       run: |
         # Preflight: fail fast before incurring pip install cost (D-12)
         # This check intentionally runs before pip install so a misconfigured

@@ -104,6 +104,20 @@ def test_retry_no_retry_on_4xx():
         assert constructor.call_count == 1
 
 
+def test_retry_passes_log_requests_when_debug_enabled(monkeypatch):
+    monkeypatch.setenv("OCI_TOKEN_EXCHANGE_DEBUG", "1")
+    mock_signer = MagicMock()
+    with patch("exchange.oci.auth.signers.TokenExchangeSigner") as constructor:
+        constructor.return_value = mock_signer
+
+        result = exchange_with_retry(
+            lambda: "fake_jwt", "https://idcs-test.example.com", "cid", "csec"
+        )
+
+    assert result is mock_signer
+    assert constructor.call_args.kwargs["log_requests"] is True
+
+
 def test_retry_retries_on_5xx():
     error = make_http_error(500)
     mock_signer = MagicMock()
