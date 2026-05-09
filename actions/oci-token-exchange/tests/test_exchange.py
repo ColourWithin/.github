@@ -16,6 +16,7 @@ import exchange  # noqa: E402
 from exchange import (  # noqa: E402
     exchange_with_retry,
     get_jwt,
+    input_path,
     mask,
     write_config,
     write_credentials,
@@ -67,6 +68,24 @@ def test_write_output_multiple_keys(github_output):
 def test_write_env_appends(github_env):
     write_env("OCI_CLI_AUTH", "security_token")
     assert "OCI_CLI_AUTH=security_token\n" in github_env.read_text()
+
+
+def test_input_path_expands_home(monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config")
+
+    assert input_path("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config") == (
+        tmp_path / ".oci" / "config"
+    )
+
+
+def test_input_path_uses_default_for_blank_input(monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("INPUT_OUTPUT_CONFIG_PATH", "")
+
+    assert input_path("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config") == (
+        tmp_path / ".oci" / "config"
+    )
 
 
 def test_retry_no_retry_on_4xx():

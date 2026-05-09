@@ -27,11 +27,11 @@ inputs:
   output-config-path:
     description: 'Absolute path where the OCI CLI config file will be written'
     required: false
-    default: '${{ runner.home }}/.oci/config'
+    default: '~/.oci/config'
   output-key-path:
     description: 'Absolute path where the ephemeral RSA private key will be written'
     required: false
-    default: '${{ runner.home }}/.oci/upst.pem'
+    default: '~/.oci/upst.pem'
 
 outputs:
   config-path:

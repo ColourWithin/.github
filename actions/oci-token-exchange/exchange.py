@@ -134,6 +134,19 @@ def required_env(name: str) -> str:
     return value
 
 
+def input_path(name: str, default: str) -> Path:
+    """Read an optional path input, expand ~, and return an absolute path."""
+    raw_value = os.environ.get(name) or default
+    try:
+        return Path(raw_value).expanduser().resolve()
+    except RuntimeError:
+        print(
+            f"::error::Could not resolve {name}={raw_value!r}; HOME is unavailable",
+            flush=True,
+        )
+        sys.exit(1)
+
+
 def main() -> None:
     """Run one GitHub OIDC to OCI UPST exchange."""
     client_identifier = required_env("INPUT_CLIENT_IDENTIFIER")
@@ -141,15 +154,11 @@ def main() -> None:
     domain_url = required_env("INPUT_DOMAIN_BASE_URL")
     audience = os.environ.get("INPUT_AUDIENCE", "https://github.com/ColourWithin")
     region = os.environ.get("INPUT_REGION", "ap-sydney-1")
-    config_default = str(Path.home() / ".oci" / "config")
-    key_default = str(Path.home() / ".oci" / "upst.pem")
 
     mask(client_secret)
 
-    config_path = Path(
-        os.environ.get("INPUT_OUTPUT_CONFIG_PATH", config_default)
-    ).resolve()
-    key_path = Path(os.environ.get("INPUT_OUTPUT_KEY_PATH", key_default)).resolve()
+    config_path = input_path("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config")
+    key_path = input_path("INPUT_OUTPUT_KEY_PATH", "~/.oci/upst.pem")
     token_path = config_path.parent / "upst.token"
 
     config_path.parent.mkdir(parents=True, exist_ok=True)
