@@ -11,7 +11,7 @@ let originalPath: string | undefined;
 
 function writeShim(name: string, body: string): string {
   const path = join(bin, name);
-  writeFileSync(path, `#!/usr/bin/env bash\n${body}\n`);
+  writeFileSync(path, `#!/bin/sh\n${body}\n`);
   chmodSync(path, 0o755);
   return path;
 }
@@ -24,7 +24,7 @@ describe("ensureOciCli", () => {
     mkdirSync(bin);
     mkdirSync(home);
     originalPath = process.env.PATH;
-    process.env.PATH = bin;
+    process.env.PATH = `${bin}:/bin:/usr/bin`;
     process.env.HOME = home;
     vi.resetModules();
   });
