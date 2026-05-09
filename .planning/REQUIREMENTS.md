@@ -24,14 +24,14 @@
 
 ### CLI Wrapper Action (`actions/run-oci-cli-command`)
 
-- [ ] **CLIRUN-01**: Action accepts `command` (required, must include leading `oci` literal), `silent` (default `false` — explicitly NOT the upstream's `true`, which causes operator confusion), `query` (optional, passed verbatim as `--query <value>`), `working-directory` (default `${{ github.workspace }}`)
-- [ ] **CLIRUN-02**: Action passes `command` through an env var, never inline `${{ inputs.command }}` interpolation in a `run:` body (script-injection prevention)
-- [ ] **CLIRUN-03**: Action installs `oci-cli>=3.81.1` via `pip install --user` guarded by a sentinel file (`~/.oci-cli-installed`) so multiple invocations within a single job don't reinstall
-- [ ] **CLIRUN-04**: Action verifies `oci --version` succeeds before running the command; fails with a clear message pointing at the install requirement otherwise
-- [ ] **CLIRUN-05**: Action runs the command with `bash -e -o pipefail`, captures stdout to `outputs.output` (trimmed) and `outputs.raw-output` (untrimmed), captures exit code to `outputs.exit-code` as a string
-- [ ] **CLIRUN-06**: Action fails the step on non-zero exit code (no automatic interpretation of OCI errors, no retry)
-- [ ] **CLIRUN-07**: Action ships a README documenting input/output contract, dependency on `actions/oci-token-exchange` (or any pre-existing `~/.oci/config`), and the consumer pattern
-- [ ] **CLIRUN-08**: Action implementation is composite + bash only (no Node, no Python toolchain inside the action.yml) — total ~30 lines of YAML
+- [x] **CLIRUN-01**: Action accepts `command` (required, must include leading `oci` literal), `silent` (default `false` — explicitly NOT the upstream's `true`, which causes operator confusion), `query` (optional, passed verbatim as `--query <value>`), `working-directory` (default `${{ github.workspace }}`)
+- [x] **CLIRUN-02**: Action reads `command` through the JavaScript action input API and never interpolates it into a shell `run:` body (script-injection prevention)
+- [x] **CLIRUN-03**: Action installs `oci-cli>=3.81.1` via `pip install --user` guarded by a sentinel file (`~/.oci-cli-installed`) so multiple invocations within a single job don't reinstall
+- [x] **CLIRUN-04**: Action verifies `oci --version` succeeds before running the command; fails with a clear message pointing at the install requirement otherwise
+- [x] **CLIRUN-05**: Action runs the command as argv via `@actions/exec`, captures stdout to `outputs.output` (trimmed) and `outputs.raw-output` (untrimmed), captures exit code to `outputs.exit-code` as a string
+- [x] **CLIRUN-06**: Action fails the step on non-zero exit code (no automatic interpretation of OCI errors, no retry)
+- [x] **CLIRUN-07**: Action ships a README documenting input/output contract, dependency on `actions/oci-token-exchange` (or any pre-existing `~/.oci/config`), and the consumer pattern
+- [x] **CLIRUN-08**: Action implementation is TypeScript JavaScript action bundled to committed dist/index.js with @vercel/ncc; command execution uses argv via @actions/exec and never shell interpolation
 
 ### Smoke Test Workflow (`workflows/test-actions.yml`)
 
@@ -103,14 +103,14 @@ Deferred to v1.1 / v2.
 | TOKEX-12 | Phase 1 | Pending |
 | TOKEX-13 | Phase 1 | Pending |
 | TOKEX-14 | Phase 1 | Pending |
-| CLIRUN-01 | Phase 2 | Pending |
-| CLIRUN-02 | Phase 2 | Pending |
-| CLIRUN-03 | Phase 2 | Pending |
-| CLIRUN-04 | Phase 2 | Pending |
-| CLIRUN-05 | Phase 2 | Pending |
-| CLIRUN-06 | Phase 2 | Pending |
-| CLIRUN-07 | Phase 2 | Pending |
-| CLIRUN-08 | Phase 2 | Pending |
+| CLIRUN-01 | Phase 2 | Complete |
+| CLIRUN-02 | Phase 2 | Complete |
+| CLIRUN-03 | Phase 2 | Complete |
+| CLIRUN-04 | Phase 2 | Complete |
+| CLIRUN-05 | Phase 2 | Complete |
+| CLIRUN-06 | Phase 2 | Complete |
+| CLIRUN-07 | Phase 2 | Complete |
+| CLIRUN-08 | Phase 2 | Complete |
 | SMOKE-01 | Phase 3 | Pending |
 | SMOKE-02 | Phase 3 | Pending |
 | SMOKE-03 | Phase 3 | Pending |

@@ -21,7 +21,7 @@ ColourWithin workflows authenticate to OCI as a properly-classified Service User
 <!-- v1.0 scope. -->
 
 - [ ] `actions/oci-token-exchange` — exchange GitHub Actions OIDC ID token for OCI UPST via Identity Propagation Trust; write OCI CLI/SDK config; mask UPST in logs
-- [ ] `actions/run-oci-cli-command` — thin bash composite wrapper for `oci` CLI invocations; capture stdout/stderr/exit-code as outputs; consistent redaction
+- [ ] `actions/run-oci-cli-command` — TypeScript JavaScript action for argv-safe OCI CLI invocations; installs/upgrades oci-cli>=3.81.1; captures stdout/raw stdout/exit-code/oci-cli-version
 - [ ] `workflows/test-actions.yml` — PR smoke test against personal-tenancy IPT (gated on consumer populating secrets)
 - [ ] Tag `v1.0.0` and document SHA-pin consumption pattern
 
@@ -47,7 +47,7 @@ ColourWithin workflows authenticate to OCI as a properly-classified Service User
 
 ## Constraints
 
-- **Tech stack**: GitHub composite actions (`runs.using: composite`). Action 1 = composite + Python (Oracle's first-party `oci.auth.signers.TokenExchangeSigner` from `oci>=2.168,<3`). Action 2 = composite + bash only.
+- **Tech stack**: Action 1 = composite + Python (Oracle's first-party `oci.auth.signers.TokenExchangeSigner` from `oci>=2.168,<3`). Action 2 = TypeScript JavaScript action bundled with ncc and run on Node 24.
 - **Security**: UPST and `client-secret` registered with `core.setSecret`. No retry on 4xx token-endpoint responses. Surface OCI `error` / `error_description` verbatim. Retry on 5xx/transient: exponential backoff, max 3 attempts, ~10s total.
 - **Supply chain**: Consumers pin by commit SHA, not tag. Tags exist for human readability only. Repo path is doubled (`ColourWithin/.github/actions/...`) per GitHub's org-default-repo rule.
 - **Permissions**: Consuming workflows must declare `permissions: { id-token: write, contents: read }`. Action 1 fails fast with a clear message if missing.
@@ -62,7 +62,7 @@ ColourWithin workflows authenticate to OCI as a properly-classified Service User
 | Build first-party actions instead of forking `gtrevorrow/oci-token-exchange-action` or `oracle-actions/*` | Both upstreams stale; replicate only the subset we need; eliminate CVE exposure and wrong-principal-type bug | — Pending |
 | Action 1 = Option A (composite + Python with `oci` SDK) over Option B (bash + curl + openssl) | Faithfulness to Oracle's first-party reference example outweighs ~5–8s `pip install` cost; deploy workflows are not latency-sensitive | — Pending |
 | `oci` SDK pinned as `>=2.168,<3` (minimum, not exact) | Track upstream patch fixes without action-side churn | — Pending |
-| Action 2 = bash-only composite, no Node, no Python | ~30 lines of YAML; avoid runtime sprawl when bash suffices | — Pending |
+| Action 2 = TypeScript JavaScript action bundled with ncc | Safer argv parsing, output capture, and install/failure handling outweigh committed dist overhead | — Pending |
 | Consumers pin by SHA, not tag | Supply-chain hygiene preference across ColourWithin org | — Pending |
 | Smoke tests require real OCI; no offline/mock mode | Value of action is in OCI integration; mocked tests would test the wrong thing | — Pending |
 

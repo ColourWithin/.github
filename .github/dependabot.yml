@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /actions/run-oci-cli-command
+    schedule:
+      interval: weekly

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Three phases deliver two first-party GitHub composite actions that replace unmaintained third-party alternatives shipping CVEs and wrong principal types. Phase 1 builds the OCI token exchange action — the entire critical path for OCI authentication. Phase 2 builds the CLI wrapper action (can be developed in parallel with Phase 1, but integration tests are blocked until Phase 1 is functional). Phase 3 activates the smoke test as a required merge gate, applies branch protection, and tags v1.0.0. Phase 3 has an external coordination dependency on `colour-within-ops` Phase 02 B populating repo secrets before the smoke test can pass.
+Three phases deliver first-party GitHub actions that replace unmaintained third-party alternatives shipping CVEs and wrong principal types. Phase 1 builds the OCI token exchange composite action — the entire critical path for OCI authentication. Phase 2 builds the TypeScript JavaScript OCI CLI wrapper action (can be developed in parallel with Phase 1, but integration tests are blocked until Phase 1 is functional). Phase 3 activates the smoke test as a required merge gate, applies branch protection, and tags v1.0.0. Phase 3 has an external coordination dependency on `colour-within-ops` Phase 02 B populating repo secrets before the smoke test can pass.
 
 ## Phases
 
@@ -12,8 +12,8 @@ Three phases deliver two first-party GitHub composite actions that replace unmai
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: OCI Token Exchange Action** - Build `actions/oci-token-exchange`: composite + Python action that mints a GitHub OIDC ID token, exchanges it for an OCI UPST via Identity Propagation Trust, writes OCI CLI config to disk, masks secrets, and emits outputs
-- [ ] **Phase 2: OCI CLI Wrapper Action** - Build `actions/run-oci-cli-command`: composite + bash-only action that guards OCI CLI installation, runs `oci` commands with consistent output capture and exit-code propagation
+- [x] **Phase 1: OCI Token Exchange Action** - Build `actions/oci-token-exchange`: composite + Python action that mints a GitHub OIDC ID token, exchanges it for an OCI UPST via Identity Propagation Trust, writes OCI CLI config to disk, masks secrets, and emits outputs
+- [x] **Phase 2: OCI CLI Wrapper Action** - Build `actions/run-oci-cli-command`: TypeScript JavaScript action that installs/upgrades OCI CLI, parses `oci ...` commands into argv, executes without a shell, and captures output/exit-code diagnostics
 - [ ] **Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag** - Activate `workflows/test-actions.yml` as a required PR status check using permission-scoped OCI API assertion, apply branch protection, and tag v1.0.0
 
 ## Phase Details
@@ -32,8 +32,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Implement `exchange.py` — OIDC token mint, RSA keygen, token exchange POST with retry, config write, secret masking, output emission
-- [ ] 01-02: Wire `action.yml` composite entrypoint — inputs/outputs declaration, env-var passing to `exchange.py`, `requirements.txt`, action README
+- [x] 01-01: Implement `exchange.py` — OIDC token mint, RSA keygen, token exchange POST with retry, config write, secret masking, output emission
+- [x] 01-02: Wire `action.yml` composite entrypoint — inputs/outputs declaration, env-var passing to `exchange.py`, `requirements.txt`, action README
 
 ### Phase 2: OCI CLI Wrapper Action
 **Goal**: A consumer workflow can call `actions/run-oci-cli-command` after `actions/oci-token-exchange` and receive the OCI CLI command's stdout and exit code as step outputs
@@ -48,7 +48,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Implement `action.yml` — bash-only composite with OCI CLI install guard (sentinel file), command execution, stdout/exit-code capture, action README
+- [x] 02-01: Implement TypeScript OCI CLI wrapper action — package, parser, install/version sentinel, argv execution, outputs, docs, Dependabot, npm CI gates, committed ncc bundle
 
 ### Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag
 **Goal**: Both actions are verified end-to-end against real OCI on every PR that touches action files, merging to main is blocked without a passing smoke test, and `v1.0.0` is tagged for SHA-pinned consumer consumption
@@ -73,6 +73,6 @@ Phases 1 and 2 can be developed concurrently (code); Phase 2 integration testing
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. OCI Token Exchange Action | 0/2 | Not started | - |
-| 2. OCI CLI Wrapper Action | 0/1 | Not started | - |
+| 1. OCI Token Exchange Action | 2/2 | Complete | 2026-05-09 |
+| 2. OCI CLI Wrapper Action | 1/1 | Complete | 2026-05-09 |
 | 3. Smoke Test, Branch Protection, and v1.0.0 Tag | 0/2 | Not started | - |

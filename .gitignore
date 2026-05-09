@@ -19,3 +19,13 @@ _site/
 # counterproductive to check this file into the repository.
 # Details at https://github.com/github/pages-gem/issues/768
 Gemfile.lock
+
+# Python artefacts (actions/oci-token-exchange)
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node artefacts (actions/run-oci-cli-command)
+node_modules/
