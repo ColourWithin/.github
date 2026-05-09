@@ -87,20 +87,47 @@ Deferred to v1.1 / v2.
 
 ## Traceability
 
-Empty until roadmap creation populates phase mapping.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TOKEX-01 — TOKEX-14 | TBD | Pending |
-| CLIRUN-01 — CLIRUN-08 | TBD | Pending |
-| SMOKE-01 — SMOKE-07 | TBD | Pending |
-| REL-01 — REL-04 | TBD | Pending |
+| TOKEX-01 | Phase 1 | Pending |
+| TOKEX-02 | Phase 1 | Pending |
+| TOKEX-03 | Phase 1 | Pending |
+| TOKEX-04 | Phase 1 | Pending |
+| TOKEX-05 | Phase 1 | Pending |
+| TOKEX-06 | Phase 1 | Pending |
+| TOKEX-07 | Phase 1 | Pending |
+| TOKEX-08 | Phase 1 | Pending |
+| TOKEX-09 | Phase 1 | Pending |
+| TOKEX-10 | Phase 1 | Pending |
+| TOKEX-11 | Phase 1 | Pending |
+| TOKEX-12 | Phase 1 | Pending |
+| TOKEX-13 | Phase 1 | Pending |
+| TOKEX-14 | Phase 1 | Pending |
+| CLIRUN-01 | Phase 2 | Pending |
+| CLIRUN-02 | Phase 2 | Pending |
+| CLIRUN-03 | Phase 2 | Pending |
+| CLIRUN-04 | Phase 2 | Pending |
+| CLIRUN-05 | Phase 2 | Pending |
+| CLIRUN-06 | Phase 2 | Pending |
+| CLIRUN-07 | Phase 2 | Pending |
+| CLIRUN-08 | Phase 2 | Pending |
+| SMOKE-01 | Phase 3 | Pending |
+| SMOKE-02 | Phase 3 | Pending |
+| SMOKE-03 | Phase 3 | Pending |
+| SMOKE-04 | Phase 3 | Pending |
+| SMOKE-05 | Phase 3 | Pending |
+| SMOKE-06 | Phase 3 | Pending |
+| SMOKE-07 | Phase 3 | Pending |
+| REL-01 | Phase 3 | Pending |
+| REL-02 | Phase 3 | Pending |
+| REL-03 | Phase 3 | Pending |
+| REL-04 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 33 total (14 TOKEX + 8 CLIRUN + 7 SMOKE + 4 REL)
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 33 ⚠️
+- Mapped to phases: 33
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 after /gsd-new-project initial definition*
+*Last updated: 2026-05-09 after /gsd-new-project roadmap creation (v1.0 OCI Composite Actions)*
