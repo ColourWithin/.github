@@ -41,7 +41,10 @@ jobs:
       - name: Lint - no set -x in action source
         shell: bash
         run: |
-          if grep -rn 'set -x\|set -o xtrace' actions/; then
+          if grep -rn 'set -x\|set -o xtrace' \
+            actions/*/action.yml \
+            actions/*/*.py \
+            actions/*/src/; then
             echo "::error::Found set -x or set -o xtrace in action source. Remove before merging."
             exit 1
           fi
