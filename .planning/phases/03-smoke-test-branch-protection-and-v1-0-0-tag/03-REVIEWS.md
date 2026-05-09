@@ -192,8 +192,8 @@ The release-gate plan has the right human checkpoint structure. The evidence fil
 
 ## 2. Current Concerns
 
-- **[LOW] `uses:` syntax space typo in Plan 03-01 Task 3:** The task instruction asks to create a static check that requires "the ref after ` @` to match exactly `[0-9a-f]{40}`". It includes a literal space before the `@`. GitHub Actions syntax does not use a space before the `@` (e.g., `uses: actions/checkout@<sha>`). The executor should be instructed to check for `@` without the preceding space to ensure the regex isn't brittle or incorrect.
-- **[LOW] README and Markdown ` @<sha>` references:** Similarly, Plan 03-03 Task 1 instructs updating the README with `ColourWithin/.github/actions/oci-token-exchange @<sha>`. While acceptable for Markdown readability, the executor should be mindful not to propagate this space into actual YAML snippets where it would cause syntax errors.
+- **[LOW] `uses:` syntax space typo in Plan 03-01 Task 3:** The task instruction asks to create a static check that requires "the ref after `@` to match exactly `[0-9a-f]{40}`". GitHub Actions syntax uses no space before the `@` (e.g., `uses: actions/checkout@<sha>`). The executor should be instructed to check for `@` directly to ensure the regex is not brittle or incorrect.
+- **[LOW] README and Markdown `@<sha>` references:** Similarly, Plan 03-03 Task 1 instructs updating the README with `ColourWithin/.github/actions/oci-token-exchange@<sha>`. The executor should keep this exact form in YAML snippets.
 
 All previous Cycle 1 MEDIUM and LOW concerns were marked cleanly addressed.
 

@@ -48,7 +48,7 @@ nyquist_rationale: |
 | 3-01-01 | 01 | 1 | SMOKE-01, SMOKE-06, REL-03 | T-3-01, T-3-02 | Local workflow keeps existing gates, adds pip cache with SHA-pinned action, and verifies actionlint checksum before extraction | static + CI | `actionlint .github/workflows/test-actions.yml` plus grep checks for SHA pins and checksum verification | yes | pending |
 | 3-01-02 | 01 | 1 | SMOKE-02..07 | T-3-03 | Requirements/roadmap no longer claim false local OCI self-smoke; they point to external ops smoke evidence | static | `rg "colour-within-ops\|external smoke\|oci-ipt-smoke" .planning/REQUIREMENTS.md .planning/ROADMAP.md` | yes | pending |
 | 3-02-01 | 02 | 1 | SMOKE-02..05 | T-3-04 | External smoke handoff uses production environment, id-token permission, ops audience, candidate SHA refs, and read-only `oci os ns get` | docs/static | `rg "oci-ipt-smoke\|workflow_dispatch\|https://github.com/ColourWithin/colour-within-ops\|oci os ns get" docs/actions` | yes | pending |
-| 3-03-01 | 03 | 2 | SMOKE-07, REL-01, REL-02, REL-04 | T-3-05 | Tagging is blocked until local checks and external smoke evidence for candidate SHA are verified | manual + CLI | `gh api repos/ColourWithin/.github/branches/main/protection` and `git rev-parse v1.0.0` after approval | yes | pending |
+| 3-03-01 | 03 | 2 | SMOKE-07, REL-01, REL-02, REL-04 | T-3-05 | Tagging is blocked until local checks and external smoke evidence for candidate SHA are verified | manual + CLI | `gh api repos/ColourWithin/.github/rulesets` or `gh api orgs/ColourWithin/rulesets/<id>`, plus `git rev-parse v1.0.0` after approval | yes | pending |
 
 *Status: pending, green, red, flaky*
 
@@ -67,7 +67,7 @@ nyquist_rationale: |
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
 | Real OCI smoke against trusted IPT subject | SMOKE-02, SMOKE-03, SMOKE-04, SMOKE-05 | The trusted OIDC subject is `colour-within-ops`, not this `.github` repo | Run `colour-within-ops/.github/workflows/oci-ipt-smoke.yml` with the candidate `.github` SHA and record run URL/result |
-| Branch protection activation | SMOKE-07 | Requires repo administration permissions and should only require local checks | Verify required status checks via `gh api repos/ColourWithin/.github/branches/main/protection` |
+| Branch protection activation | SMOKE-07 | Requires repo or organisation administration permissions and should only require local checks | Verify active default-branch protection via `gh api repos/ColourWithin/.github/rulesets` or `gh api orgs/ColourWithin/rulesets/<id>` |
 | `v1.0.0` tag creation | REL-01 | Externally visible release marker requiring final human approval | After local checks and external smoke evidence, create signed tag or approved release tag command |
 
 ---
