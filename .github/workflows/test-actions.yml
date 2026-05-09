@@ -89,3 +89,45 @@ jobs:
       - name: Pytest unit tests
         shell: bash
         run: pytest actions/oci-token-exchange/tests/ -v
+
+      - name: Install run-oci-cli-command npm dependencies
+        shell: bash
+        working-directory: actions/run-oci-cli-command
+        run: npm ci
+
+      - name: Run run-oci-cli-command tests
+        shell: bash
+        working-directory: actions/run-oci-cli-command
+        run: npm test -- --run
+
+      - name: TypeScript typecheck
+        shell: bash
+        working-directory: actions/run-oci-cli-command
+        run: npm run typecheck
+
+      - name: npm audit
+        shell: bash
+        working-directory: actions/run-oci-cli-command
+        run: npm audit --audit-level=high
+
+      - name: Runtime dependency license allowlist
+        shell: bash
+        working-directory: actions/run-oci-cli-command
+        run: npm run licenses
+
+      - name: Build run-oci-cli-command bundle
+        shell: bash
+        working-directory: actions/run-oci-cli-command
+        run: npm run build
+
+      - name: Verify run-oci-cli-command bundle is fresh
+        shell: bash
+        run: git diff --exit-code -- actions/run-oci-cli-command/dist/index.js
+
+      - name: Lint - no shell execution in TypeScript action source
+        shell: bash
+        run: |
+          if grep -rE "child_process\.exec\b|execSync\b|shell: true" actions/run-oci-cli-command/src/; then
+            echo "::error::Found shell execution primitive in run-oci-cli-command source."
+            exit 1
+          fi
