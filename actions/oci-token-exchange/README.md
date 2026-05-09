@@ -73,6 +73,12 @@ The `audience` input default is `https://github.com/ColourWithin`. This value mu
 
 Oracle's own SDK example, `workload_identity_federation_signer_example.py`, uses `"github-actions"` as a placeholder. Do not copy that placeholder into production. Use the real audience URL configured on the IPT.
 
+## colour-within-ops smoke audience
+
+The Phase 3 smoke workflow in `colour-within-ops` overrides `audience` to `https://github.com/ColourWithin/colour-within-ops`. The default remains `https://github.com/ColourWithin` for normal consumers, but the smoke must use the ops audience because the current IPT trusts the ops repo subject.
+
+See [OCI IPT Smoke Test](../../docs/actions/oci-ipt-smoke.md) for the workflow skeleton and evidence checklist.
+
 ## `requested_token_type` literal correction
 
 The OCI PRD section 3 shows `urn:oci:token-type:upst`, but the canonical OCI literal is `urn:oci:token-type:oci-upst` with the `oci-` infix. The OCI SDK uses the correct literal internally. This note exists so consumers do not get stuck reconciling the PRD typo with Oracle SDK source.

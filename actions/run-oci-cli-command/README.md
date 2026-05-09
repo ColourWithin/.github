@@ -74,6 +74,18 @@ with:
 
 Do not combine both forms. The action fails before execution when `query` is set and `command` already contains `--query`.
 
+## Smoke-test command
+
+The release smoke uses this action after `actions/oci-token-exchange` to prove the candidate action SHA against the trusted OCI IPT path. The first-choice command is:
+
+```yaml
+command: oci os ns get
+```
+
+The smoke workflow can inspect `exit-code`, `output`, and `oci-cli-version` to verify the read-only command succeeded and the installed OCI CLI meets the required version floor.
+
+See [OCI IPT Smoke Test](../../docs/actions/oci-ipt-smoke.md) for the full `colour-within-ops` workflow skeleton.
+
 ## JSON examples
 
 Quoted JSON is passed as one argv token, not through a shell:
