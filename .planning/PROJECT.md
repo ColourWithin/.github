@@ -47,7 +47,7 @@ ColourWithin workflows authenticate to OCI as a properly-classified Service User
 
 ## Constraints
 
-- **Tech stack**: GitHub composite actions (`runs.using: composite`). Action 1 = composite + Python (Oracle's first-party `oci.auth.signers.TokenExchangeSigner` from `oci>=2.168,<3`). Action 2 = composite + bash only.
+- **Tech stack**: Action 1 = composite + Python (Oracle's first-party `oci.auth.signers.TokenExchangeSigner` from `oci>=2.168,<3`). Action 2 = TypeScript JavaScript action bundled with ncc and run on Node 24.
 - **Security**: UPST and `client-secret` registered with `core.setSecret`. No retry on 4xx token-endpoint responses. Surface OCI `error` / `error_description` verbatim. Retry on 5xx/transient: exponential backoff, max 3 attempts, ~10s total.
 - **Supply chain**: Consumers pin by commit SHA, not tag. Tags exist for human readability only. Repo path is doubled (`ColourWithin/.github/actions/...`) per GitHub's org-default-repo rule.
 - **Permissions**: Consuming workflows must declare `permissions: { id-token: write, contents: read }`. Action 1 fails fast with a clear message if missing.
