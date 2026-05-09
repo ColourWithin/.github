@@ -1,0 +1,91 @@
+name: Test composite actions
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'actions/**'
+      - '.github/workflows/test-actions.yml'
+
+jobs:
+  unit-tests:
+    name: Unit tests and lint
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Install test dependencies
+        shell: bash
+        run: pip install 'oci>=2.173.1,<3' requests cryptography pytest ruff
+
+      - name: Ruff lint
+        shell: bash
+        run: ruff check actions/oci-token-exchange/
+
+      - name: Install actionlint
+        shell: bash
+        run: |
+          curl -Lo actionlint.tar.gz \
+            "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz"
+          tar -xzf actionlint.tar.gz actionlint
+          sudo mv actionlint /usr/local/bin/actionlint
+          rm -f actionlint.tar.gz
+
+      - name: Actionlint (workflow files only)
+        shell: bash
+        run: actionlint .github/workflows/test-actions.yml
+
+      - name: Lint - no set -x in action source
+        shell: bash
+        run: |
+          if grep -rn 'set -x\|set -o xtrace' actions/; then
+            echo "::error::Found set -x or set -o xtrace in action source. Remove before merging."
+            exit 1
+          fi
+
+      - name: Lint - no inputs interpolation in composite action run bodies
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("actions/oci-token-exchange/action.yml")
+          lines = path.read_text().splitlines()
+          findings = []
+          needle = "$" + "{{ inputs."
+
+          for index, line in enumerate(lines):
+              stripped = line.lstrip()
+              if not (
+                  stripped == "run: |"
+                  or stripped.startswith("run: |-")
+                  or stripped.startswith("run: |+")
+              ):
+                  continue
+              run_indent = len(line) - len(stripped)
+              for body_index in range(index + 1, len(lines)):
+                  body = lines[body_index]
+                  if body.strip() == "":
+                      continue
+                  body_indent = len(body) - len(body.lstrip())
+                  if body_indent <= run_indent:
+                      break
+                  if needle in body:
+                      findings.append((body_index + 1, body.strip()))
+
+          if findings:
+              for line_no, text in findings:
+                  print(
+                      f"::error file={path},line={line_no}::"
+                      "Found $" + "{{ inputs.* }} in action.yml run: body: " + text
+                  )
+              raise SystemExit(1)
+          print("OK: no inputs interpolation in action.yml run bodies")
+          PY
+
+      - name: Pytest unit tests
+        shell: bash
+        run: pytest actions/oci-token-exchange/tests/ -v
