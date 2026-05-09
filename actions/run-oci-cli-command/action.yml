@@ -1,0 +1,35 @@
+name: 'Run OCI CLI Command'
+description: >-
+  Installs or verifies OCI CLI, safely parses a caller-provided oci command into
+  argv, executes it without a shell, and exposes stdout/exit diagnostics.
+author: 'ColourWithin'
+
+inputs:
+  command:
+    description: 'OCI command to run. Must start with the literal oci command.'
+    required: true
+  silent:
+    description: 'Hide the parsed command summary while still streaming command output.'
+    required: false
+    default: 'false'
+  query:
+    description: 'Optional JMESPath query appended as --query <value> when command does not already include --query.'
+    required: false
+  working-directory:
+    description: 'Directory where the OCI command should run.'
+    required: false
+    default: '${{ github.workspace }}'
+
+outputs:
+  output:
+    description: 'Command stdout with surrounding whitespace trimmed.'
+  raw-output:
+    description: 'Command stdout exactly as captured.'
+  exit-code:
+    description: 'OCI CLI process exit code.'
+  oci-cli-version:
+    description: 'Detected bare OCI CLI semantic version.'
+
+runs:
+  using: node24
+  main: dist/index.js

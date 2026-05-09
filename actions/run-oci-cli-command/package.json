@@ -1,0 +1,27 @@
+{
+  "name": "@colourwithin/run-oci-cli-command",
+  "version": "0.0.0",
+  "private": true,
+  "description": "ColourWithin GitHub Action for argv-safe OCI CLI command execution.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "build": "ncc build src/index.ts -o dist --license licenses.txt",
+    "licenses": "license-checker-rseidelsohn --production --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense'"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/exec": "^3.0.0",
+    "@actions/io": "^3.0.2",
+    "shell-quote": "^1.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "@types/shell-quote": "^1.7.5",
+    "@vercel/ncc": "^0.38.4",
+    "license-checker-rseidelsohn": "^4.4.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
+}

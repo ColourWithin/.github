@@ -31,7 +31,7 @@
 - [ ] **CLIRUN-05**: Action runs the command with `bash -e -o pipefail`, captures stdout to `outputs.output` (trimmed) and `outputs.raw-output` (untrimmed), captures exit code to `outputs.exit-code` as a string
 - [ ] **CLIRUN-06**: Action fails the step on non-zero exit code (no automatic interpretation of OCI errors, no retry)
 - [ ] **CLIRUN-07**: Action ships a README documenting input/output contract, dependency on `actions/oci-token-exchange` (or any pre-existing `~/.oci/config`), and the consumer pattern
-- [ ] **CLIRUN-08**: Action implementation is composite + bash only (no Node, no Python toolchain inside the action.yml) — total ~30 lines of YAML
+- [ ] **CLIRUN-08**: Action implementation is TypeScript JavaScript action bundled to committed dist/index.js with @vercel/ncc; command execution uses argv via @actions/exec and never shell interpolation
 
 ### Smoke Test Workflow (`workflows/test-actions.yml`)
 
