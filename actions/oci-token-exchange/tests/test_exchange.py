@@ -16,6 +16,7 @@ import exchange  # noqa: E402
 from exchange import (  # noqa: E402
     exchange_with_retry,
     get_jwt,
+    input_path,
     mask,
     write_config,
     write_credentials,
@@ -69,6 +70,24 @@ def test_write_env_appends(github_env):
     assert "OCI_CLI_AUTH=security_token\n" in github_env.read_text()
 
 
+def test_input_path_expands_home(monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config")
+
+    assert input_path("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config") == (
+        tmp_path / ".oci" / "config"
+    )
+
+
+def test_input_path_uses_default_for_blank_input(monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("INPUT_OUTPUT_CONFIG_PATH", "")
+
+    assert input_path("INPUT_OUTPUT_CONFIG_PATH", "~/.oci/config") == (
+        tmp_path / ".oci" / "config"
+    )
+
+
 def test_retry_no_retry_on_4xx():
     error = make_http_error(
         403, '{"error":"Forbidden","error_description":"IPT misconfigured"}'
@@ -83,6 +102,20 @@ def test_retry_no_retry_on_4xx():
                 "csec",
             )
         assert constructor.call_count == 1
+
+
+def test_retry_passes_log_requests_when_debug_enabled(monkeypatch):
+    monkeypatch.setenv("OCI_TOKEN_EXCHANGE_DEBUG", "1")
+    mock_signer = MagicMock()
+    with patch("exchange.oci.auth.signers.TokenExchangeSigner") as constructor:
+        constructor.return_value = mock_signer
+
+        result = exchange_with_retry(
+            lambda: "fake_jwt", "https://idcs-test.example.com", "cid", "csec"
+        )
+
+    assert result is mock_signer
+    assert constructor.call_args.kwargs["log_requests"] is True
 
 
 def test_retry_retries_on_5xx():

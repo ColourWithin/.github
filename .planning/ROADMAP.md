@@ -2,7 +2,7 @@
 
 ## Overview
 
-Three phases deliver first-party GitHub actions that replace unmaintained third-party alternatives shipping CVEs and wrong principal types. Phase 1 builds the OCI token exchange composite action — the entire critical path for OCI authentication. Phase 2 builds the TypeScript JavaScript OCI CLI wrapper action (can be developed in parallel with Phase 1, but integration tests are blocked until Phase 1 is functional). Phase 3 activates the smoke test as a required merge gate, applies branch protection, and tags v1.0.0. Phase 3 has an external coordination dependency on `colour-within-ops` Phase 02 B populating repo secrets before the smoke test can pass.
+Three phases deliver first-party GitHub actions that replace unmaintained third-party alternatives shipping CVEs and wrong principal types. Phase 1 builds the OCI token exchange composite action — the entire critical path for OCI authentication. Phase 2 builds the TypeScript JavaScript OCI CLI wrapper action (can be developed in parallel with Phase 1, but integration tests are blocked until Phase 1 is functional). Phase 3 hardens the local `.github` release-readiness workflow, documents the real OCI smoke in `colour-within-ops`, applies branch protection for local checks only, records external smoke evidence, and tags v1.0.0 after both gates pass.
 
 ## Phases
 
@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: OCI Token Exchange Action** - Build `actions/oci-token-exchange`: composite + Python action that mints a GitHub OIDC ID token, exchanges it for an OCI UPST via Identity Propagation Trust, writes OCI CLI config to disk, masks secrets, and emits outputs
 - [x] **Phase 2: OCI CLI Wrapper Action** - Build `actions/run-oci-cli-command`: TypeScript JavaScript action that installs/upgrades OCI CLI, parses `oci ...` commands into argv, executes without a shell, and captures output/exit-code diagnostics
-- [ ] **Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag** - Activate `workflows/test-actions.yml` as a required PR status check using permission-scoped OCI API assertion, apply branch protection, and tag v1.0.0
+- [ ] **Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag** - Require truthful local release-readiness checks in `.github`, hand off real OCI IPT smoke to `colour-within-ops`, apply branch protection for local checks only, and tag v1.0.0 after external smoke evidence is recorded
 
 ## Phase Details
 
@@ -51,20 +51,21 @@ Plans:
 - [x] 02-01: Implement TypeScript OCI CLI wrapper action — package, parser, install/version sentinel, argv execution, outputs, docs, Dependabot, npm CI gates, committed ncc bundle
 
 ### Phase 3: Smoke Test, Branch Protection, and v1.0.0 Tag
-**Goal**: Both actions are verified end-to-end against real OCI on every PR that touches action files, merging to main is blocked without a passing smoke test, and `v1.0.0` is tagged for SHA-pinned consumer consumption
+**Goal**: Local release-readiness checks protect PRs in `.github`, real OCI IPT smoke runs manually in `colour-within-ops` against the candidate `.github` SHA, branch protection requires local checks only, and `v1.0.0` is tagged for SHA-pinned consumer consumption after external smoke evidence passes
 **Depends on**: Phase 1 and Phase 2 both complete
-**External dependency (BLOCKER)**: This phase cannot produce a passing smoke test until `colour-within-ops` Phase 02 B populates `OCI_OIDC_CLIENT_IDENTIFIER`, `OCI_OIDC_CLIENT_SECRET`, and `OCI_DOMAIN_BASE_URL` in this repo's GitHub Secrets/Variables. That is a separate workstream requiring out-of-band coordination. The workflow YAML can be written and merged ahead of secret population, but the required status check must not be activated until secrets are present or all PRs will be blocked by a permanently failing check.
+**External dependency (BLOCKER)**: This phase cannot prove the real OCI trust path inside the `.github` repo because the Identity Propagation Trust is pinned to `colour-within-ops`. The external smoke must live in `colour-within-ops/.github/workflows/oci-ipt-smoke.yml`, run with `environment: production`, request `id-token: write` and `contents: read`, use audience `https://github.com/ColourWithin/colour-within-ops`, call the candidate `.github` action SHA, and run the read-only command `oci os ns get` unless a documented permission-scoped fallback is needed.
 **Requirements**: SMOKE-01, SMOKE-02, SMOKE-03, SMOKE-04, SMOKE-05, SMOKE-06, SMOKE-07, REL-01, REL-02, REL-03, REL-04
 **Success Criteria** (what must be TRUE):
-  1. Opening a PR that modifies any file under `actions/**` triggers `workflows/test-actions.yml` using `@${{ github.sha }}` self-reference — the PR's own action code is what runs, not a previously tagged version
-  2. The smoke test calls a permission-scoped OCI API (not merely `oci iam region list` which succeeds for any authenticated principal) — a UPST produced with `allowImpersonation: true` passes where one produced with a misconfigured IPT would fail
-  3. The smoke test is a required status check on the main branch — a PR that breaks either action cannot be merged
-  4. `v1.0.0` is tagged on the repo and the top-level README documents the SHA-pinned consumption pattern with the doubled `.github` path explanation
-**Plans**: TBD
+  1. Opening a PR that modifies files under `actions/**`, `docs/actions/**`, `README.md`, or `.github/workflows/test-actions.yml` triggers `.github/workflows/test-actions.yml` and runs local release-readiness gates for both actions.
+  2. External smoke evidence from `colour-within-ops/.github/workflows/oci-ipt-smoke.yml` records the candidate `.github` SHA, workflow run URL, `oci os ns get` command, exit code 0, JSON parse result, and `oci-cli-version >= 3.81.1`.
+  3. The required branch-protection status check on `main` is local release-readiness only; the external smoke remains a manual pre-tag evidence gate and is not required by `.github` branch protection.
+  4. `v1.0.0` is signed and tagged on the exact `origin/main` SHA that `colour-within-ops` smoke-tested, and the top-level README documents the SHA-pinned consumption pattern with the doubled `.github` path explanation.
 
 Plans:
-- [ ] 03-01: Write `workflows/test-actions.yml` — `paths:` filter, `@${{ github.sha }}` self-reference, `actions/cache` pip caching, permission-scoped OCI API assertion, SHA-pinned third-party action references
-- [ ] 03-02: Activate branch protection (required status check), tag `v1.0.0`, update top-level README with SHA-pin consumption docs and changelog entry
+- [x] 03-01: Correct requirements/roadmap and harden local release-readiness workflow — paths filter, SHA-pinned `actions/cache`, checksum-verified actionlint install, static checks, and local Python/npm gates
+- [x] 03-02: Document external `colour-within-ops` OCI IPT smoke handoff — workflow skeleton, evidence checklist, action README links, and non-goals
+- [x] 03-03: Prepare v1.0.0 release-candidate gate — README release note, candidate-SHA choreography, external smoke evidence template, and local branch-protection verification
+- [ ] 03-04: Manual signed `v1.0.0` tag — after merge to main and passed external smoke evidence for the exact `origin/main` SHA
 
 ## Progress
 
@@ -75,4 +76,4 @@ Phases 1 and 2 can be developed concurrently (code); Phase 2 integration testing
 |-------|----------------|--------|-----------|
 | 1. OCI Token Exchange Action | 2/2 | Complete | 2026-05-09 |
 | 2. OCI CLI Wrapper Action | 1/1 | Complete | 2026-05-09 |
-| 3. Smoke Test, Branch Protection, and v1.0.0 Tag | 0/2 | Not started | - |
+| 3. Smoke Test, Branch Protection, and v1.0.0 Tag | 3/4 | In Progress | - |

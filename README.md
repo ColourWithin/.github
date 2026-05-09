@@ -4,6 +4,17 @@ Org-wide [community health files](https://docs.github.com/en/communities/setting
 
 Once this repo is published as `github.com/ColourWithin/.github`, every other repo in the org automatically inherits the files here as fallbacks — issue forms, PR templates, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`. Any child repo that ships its own version of a file overrides the org-level fallback by file presence.
 
+## First-party GitHub Actions
+
+This repo also publishes internal ColourWithin GitHub Actions:
+
+- `ColourWithin/.github/actions/oci-token-exchange@<sha>` - exchange GitHub Actions OIDC for an OCI UPST through IPT.
+- `ColourWithin/.github/actions/run-oci-cli-command@<sha>` - run OCI CLI commands through argv-safe execution and captured outputs.
+
+Consumers pin a commit SHA. The doubled `.github` path is expected because this is the organisation default repository. Detailed usage, prerequisites, and smoke-test guidance live in [docs/actions/](docs/actions/).
+
+Release candidate: `v1.0.0` is tagged only after local checks pass and the `colour-within-ops` IPT smoke evidence records the exact candidate SHA.
+
 ## Layout
 
 ```
