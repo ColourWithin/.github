@@ -50,7 +50,7 @@ def exchange_with_retry(
             )
         except oci_requests.exceptions.HTTPError as exc:
             status = exc.response.status_code if exc.response is not None else 0
-            if status < 500:
+            if status < 500 and status != 429:
                 body = exc.response.text if exc.response is not None else str(exc)
                 print(f"::error::OCI token endpoint error {status}: {body}", flush=True)
                 sys.exit(1)

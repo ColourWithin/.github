@@ -67,6 +67,6 @@ runs:
           exit 1
         fi
 
-        pip install --user 'oci>=2.173.1,<3' requests cryptography
+        python -m pip install --user -r "${{ github.action_path }}/requirements.txt"
 
         python "${{ github.action_path }}/exchange.py"

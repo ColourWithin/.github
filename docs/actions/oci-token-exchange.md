@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Exchange OIDC token for OCI UPST
-        uses: ColourWithin/.github/actions/oci-token-exchange@<sha-or-tag>
+        uses: ColourWithin/.github/actions/oci-token-exchange@<commit-sha>
         with:
           client-identifier: ${{ secrets.OCI_OIDC_CLIENT_IDENTIFIER }}
           client-secret: ${{ secrets.OCI_OIDC_CLIENT_SECRET }}

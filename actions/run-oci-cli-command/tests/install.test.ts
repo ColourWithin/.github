@@ -8,6 +8,7 @@ let root: string;
 let bin: string;
 let home: string;
 let originalPath: string | undefined;
+let originalHome: string | undefined;
 
 function writeShim(name: string, body: string): string {
   const path = join(bin, name);
@@ -24,6 +25,7 @@ describe("ensureOciCli", () => {
     mkdirSync(bin);
     mkdirSync(home);
     originalPath = process.env.PATH;
+    originalHome = process.env.HOME;
     process.env.PATH = `${bin}:/bin:/usr/bin`;
     process.env.HOME = home;
     vi.resetModules();
@@ -31,6 +33,7 @@ describe("ensureOciCli", () => {
 
   afterEach(() => {
     process.env.PATH = originalPath;
+    process.env.HOME = originalHome;
     rmSync(root, { recursive: true, force: true });
     vi.restoreAllMocks();
   });

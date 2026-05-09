@@ -100,6 +100,21 @@ def test_retry_retries_on_5xx():
         assert result is mock_signer
 
 
+def test_retry_retries_on_429():
+    error = make_http_error(429, '{"error":"Too Many Requests"}')
+    mock_signer = MagicMock()
+    with (
+        patch("exchange.oci.auth.signers.TokenExchangeSigner") as constructor,
+        patch("exchange.time.sleep"),
+    ):
+        constructor.side_effect = [error, mock_signer]
+        result = exchange_with_retry(
+            lambda: "fake_jwt", "https://idcs-test.example.com", "cid", "csec"
+        )
+        assert constructor.call_count == 2
+        assert result is mock_signer
+
+
 def test_retry_max_attempts():
     error = make_http_error(500)
     with (

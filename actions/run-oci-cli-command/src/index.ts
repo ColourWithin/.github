@@ -37,10 +37,6 @@ export async function run(): Promise<void> {
         stdout: (data: Buffer) => {
           const chunk = data.toString("utf8");
           stdout += chunk;
-          process.stdout.write(chunk);
-        },
-        stderr: (data: Buffer) => {
-          process.stderr.write(data);
         }
       }
     });

@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Exchange OIDC token for OCI UPST
-        uses: ColourWithin/.github/actions/oci-token-exchange@<sha-or-tag>
+        uses: ColourWithin/.github/actions/oci-token-exchange@<commit-sha>
         with:
           client-identifier: ${{ secrets.OCI_OIDC_CLIENT_IDENTIFIER }}
           client-secret: ${{ secrets.OCI_OIDC_CLIENT_SECRET }}
@@ -28,7 +28,7 @@ jobs:
 
       - name: Run OCI command
         id: oci
-        uses: ColourWithin/.github/actions/run-oci-cli-command@<sha-or-tag>
+        uses: ColourWithin/.github/actions/run-oci-cli-command@<commit-sha>
         with:
           command: oci iam region list
 ```

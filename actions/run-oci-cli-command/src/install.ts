@@ -7,6 +7,8 @@ import { promisify } from "node:util";
 
 export const MIN_OCI_CLI_VERSION = "3.81.1";
 const SENTINEL_FILE = ".oci-cli-installed";
+const DETECT_TIMEOUT_MS = 30_000;
+const INSTALL_TIMEOUT_MS = 10 * 60 * 1000;
 const execFile = promisify(execFileCallback);
 
 export async function ensureOciCli(): Promise<string> {
@@ -35,7 +37,7 @@ export async function ensureOciCli(): Promise<string> {
 
 async function detectOciVersion(): Promise<string | null> {
   try {
-    const result = await execFile("oci", ["--version"], { encoding: "utf8" });
+    const result = await execFile("oci", ["--version"], { encoding: "utf8", timeout: DETECT_TIMEOUT_MS });
     return parseOciVersion(`${result.stdout}\n${result.stderr}`);
   } catch {
     return null;
@@ -47,12 +49,21 @@ async function installOciCli(): Promise<void> {
   try {
     await execFile("python", ["-m", "pip", "install", "--user", `oci-cli>=${MIN_OCI_CLI_VERSION}`], {
       encoding: "utf8",
-      maxBuffer: 10 * 1024 * 1024
+      maxBuffer: 10 * 1024 * 1024,
+      timeout: INSTALL_TIMEOUT_MS
     });
   } catch (error) {
+    if (isTimeoutError(error)) {
+      throw new Error(`timed out installing OCI CLI >=${MIN_OCI_CLI_VERSION}`);
+    }
     const detail = error instanceof Error ? error.message : String(error);
     throw new Error(`failed to install OCI CLI >=${MIN_OCI_CLI_VERSION}: ${detail}`);
   }
+}
+
+function isTimeoutError(error: unknown): boolean {
+  const maybeError = error as { killed?: boolean; signal?: string } | null;
+  return maybeError?.killed === true || maybeError?.signal === "SIGTERM";
 }
 
 export function parseOciVersion(output: string): string {

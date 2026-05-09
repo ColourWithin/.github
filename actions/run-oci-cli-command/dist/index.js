@@ -28243,10 +28243,6 @@ async function run() {
                 stdout: (data) => {
                     const chunk = data.toString("utf8");
                     stdout += chunk;
-                    process.stdout.write(chunk);
-                },
-                stderr: (data) => {
-                    process.stderr.write(data);
                 }
             }
         });
@@ -28318,6 +28314,8 @@ const node_path_1 = __nccwpck_require__(6760);
 const node_util_1 = __nccwpck_require__(7975);
 exports.MIN_OCI_CLI_VERSION = "3.81.1";
 const SENTINEL_FILE = ".oci-cli-installed";
+const DETECT_TIMEOUT_MS = 30_000;
+const INSTALL_TIMEOUT_MS = 10 * 60 * 1000;
 const execFile = (0, node_util_1.promisify)(node_child_process_1.execFile);
 async function ensureOciCli() {
     const userBin = getUserBinDirectory();
@@ -28341,7 +28339,7 @@ async function ensureOciCli() {
 }
 async function detectOciVersion() {
     try {
-        const result = await execFile("oci", ["--version"], { encoding: "utf8" });
+        const result = await execFile("oci", ["--version"], { encoding: "utf8", timeout: DETECT_TIMEOUT_MS });
         return parseOciVersion(`${result.stdout}\n${result.stderr}`);
     }
     catch {
@@ -28353,13 +28351,21 @@ async function installOciCli() {
     try {
         await execFile("python", ["-m", "pip", "install", "--user", `oci-cli>=${exports.MIN_OCI_CLI_VERSION}`], {
             encoding: "utf8",
-            maxBuffer: 10 * 1024 * 1024
+            maxBuffer: 10 * 1024 * 1024,
+            timeout: INSTALL_TIMEOUT_MS
         });
     }
     catch (error) {
+        if (isTimeoutError(error)) {
+            throw new Error(`timed out installing OCI CLI >=${exports.MIN_OCI_CLI_VERSION}`);
+        }
         const detail = error instanceof Error ? error.message : String(error);
         throw new Error(`failed to install OCI CLI >=${exports.MIN_OCI_CLI_VERSION}: ${detail}`);
     }
+}
+function isTimeoutError(error) {
+    const maybeError = error;
+    return maybeError?.killed === true || maybeError?.signal === "SIGTERM";
 }
 function parseOciVersion(output) {
     const match = output.match(/\b(\d+\.\d+\.\d+)\b/);
