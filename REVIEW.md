@@ -1,6 +1,8 @@
-# ColourWithin review criteria — proposed revision
+# ColourWithin review criteria
 
-**DRAFT FOR POLICY-OWNER REVIEW — not accepted, published or activated.** Intended destination: `ColourWithin/.github/REVIEW.md`, replacing only through a reviewed development PR. Current production remains COMMENT-only by default, REQUEST_CHANGES for confirmed Blocking defects, never APPROVE and never merge. This draft does not authorise any new verdict writes.
+**Accepted for publication and published; deployment activation is separate.** The owner-accepted criteria were published in [PR #16](https://github.com/ColourWithin/.github/pull/16), linked to [issue #15](https://github.com/ColourWithin/.github/issues/15), and merged at commit [`bead190e46fa6e0f78a98b1da9b0fdfa25d22e89`](https://github.com/ColourWithin/.github/commit/bead190e46fa6e0f78a98b1da9b0fdfa25d22e89). The [published policy at that commit](https://github.com/ColourWithin/.github/blob/bead190e46fa6e0f78a98b1da9b0fdfa25d22e89/REVIEW.md) has Git blob `b38ee0012ab4071de4e536d6d4b4597c3656bdcf` and SHA-256 `8c7545ce198d1dfee7cb4088027d0a9ec4187f0b5250a961f42e59b11c218e27`. It deliberately retained its original draft/status wording; this correction records publication provenance, not a new acceptance date or enforcement decision.
+
+Any PR changing this policy must be reviewed against independently pinned, pre-change accepted policy, never against its own candidate text as authority. Merge alone does not promote new trusted pins or activate enforcement; separate owner acceptance, registry promotion and per-repository activation remain required as described below.
 
 ## Composition and ownership
 
